@@ -1,0 +1,17 @@
+{
+  "author": [
+    "Generaleoley, Fyn8, milan_25"
+  ],
+  "bot_version": [
+    1,
+    0,
+    0
+  ],
+  "description": "Hello World test cog",
+  "hidden": true,
+  "install_msg": "This is a test cog, there is not real functionality",
+  "short": "Test cog",
+  "tags": [
+    "testing"
+  ]
+}
