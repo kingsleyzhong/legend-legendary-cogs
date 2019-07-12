@@ -94,8 +94,8 @@ class ClashRoyaleCog(commands.Cog):
             embed = discord.Embed(title="Invalid argument!", colour=discord.Colour.red(), description=desc)
             return await ctx.send(embed=embed)
         try:
-            player = await self.bot.crapi.get_player(tag)
-            chests = await self.bot.crapi.get_player_chests(tag)
+            player = await self.crapi.get_player(tag)
+            chests = await self.crapi.get_player_chests(tag)
             
         except clashroyale.NotFoundError:
             return await ctx.send(embed = self.badEmbed("No clan with this tag found, try again!"))
