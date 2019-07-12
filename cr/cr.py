@@ -12,8 +12,7 @@ class ClashRoyaleCog(commands.Cog):
 
     @commands.command()
     async def save(self, ctx, crtag):
-        tag = await self.config.user(ctx.author).tag.set(crtag)
-        await ctx.send(tag)
+        await self.config.user(ctx.author).tag.set(crtag)
 
     @commands.command()
     async def get(self, ctx):
