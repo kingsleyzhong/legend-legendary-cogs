@@ -1,4 +1,6 @@
 from .cr import ClashRoyaleCog
 
-def setup(bot):
-  bot.add_cog(ClashRoyaleCog(bot))
+async def setup(bot):
+    cog = ClashRoyaleCog(bot)
+    await cog.initialize()
+    bot.add_cog(cog)
