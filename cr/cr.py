@@ -5,12 +5,17 @@ import os
 
 class ClashRoyaleCog(commands.Cog):
     
+    async def initialize(self):
+        apikey = await self.bot.db.api_tokens.get_raw("crapi", default={"api_key": None})
+        if apikey is None:
+            raise ValueError("The Clash Royake API key has not been set. Use [p]set api crapi api_key,YOURAPIKEY")
+        self.crapi = clashroyale.OfficialAPI(apikey, is_async=True)
+    
     def __init__(self, bot, apikey):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=2512325)
         default_user = {"tag" : None}
         self.config.register_user(**default_user)
-        self.crapi = clashroyale.OfficialAPI(apikey, is_async=True)
         
     def badEmbed(self, text):
         bembed = discord.Embed(color=0xff0000)
