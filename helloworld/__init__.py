@@ -1,4 +1,4 @@
-from helloworld import helloworld
+from .helloworld import HWCog
 
 def setup(bot):
-  bot.add_cog(helloworld())
+  bot.add_cog(HWCog())
