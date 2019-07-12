@@ -1,4 +1,4 @@
-from .cr import ClashRoyale
+from .cr import ClashRoyaleCog
 
 def setup(bot):
-  bot.add_cog(ClashRoyale())
+  bot.add_cog(ClashRoyaleCog())
