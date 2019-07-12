@@ -1,14 +1,13 @@
 import discord
 from redbot.core import commands, Config, checks
 import clashroyale
-import os
 
 class ClashRoyaleCog(commands.Cog):
     
     async def initialize(self):
         apikey = await self.bot.db.api_tokens.get_raw("crapi", default={"api_key": None})
         if apikey is None:
-            raise ValueError("The Clash Royake API key has not been set. Use [p]set api crapi api_key,YOURAPIKEY")
+            raise ValueError("The Clash Royale API key has not been set. Use [p]set api crapi api_key,YOURAPIKEY")
         self.crapi = clashroyale.OfficialAPI(apikey, is_async=True)
     
     def __init__(self, bot, apikey):
