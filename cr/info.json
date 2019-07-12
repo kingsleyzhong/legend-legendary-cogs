@@ -4,6 +4,5 @@
   "description": "Clash Royale cog",
   "install_msg": "Thank you for installing our Clash Royale cog.",
   "short": "Clash Royale related commands",
-  "requirements" : ["clashroyale"],
   "tags": ["Clash Royale", "Stats"]
 }
