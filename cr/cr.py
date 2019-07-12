@@ -2,7 +2,7 @@ import discord
 from redbot.core import commands, Config, checks
 import clashroyale
 
-class ClashRoyale(commands.Cog):
+class ClashRoyaleCog(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
