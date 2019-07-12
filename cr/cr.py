@@ -11,6 +11,8 @@ class ClashRoyaleCog(commands.Cog):
         default_user = {"tag" : None}
         self.config.register_user(**default_user)
         os.getenv("CRAPI_TOKEN")
+        print(os.getenv("CRAPI_TOKEN"))
+        print(type(os.getenv("CRAPI_TOKEN")))
         self.crapi = clashroyale.OfficialAPI(os.getenv("CRAPI_TOKEN"), is_async=True)
         
     def badEmbed(self, text):
