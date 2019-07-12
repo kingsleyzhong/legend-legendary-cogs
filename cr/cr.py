@@ -4,7 +4,7 @@ import clashroyale
 
 class ClashRoyaleCog(commands.Cog):
     
-    def __init__(self, bot, apikey):
+    def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=2512325)
         default_user = {"tag" : None}
