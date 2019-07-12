@@ -5,12 +5,12 @@ import os
 
 class ClashRoyaleCog(commands.Cog):
 
-    def __init__(self, bot):
+    async def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=2512325)
         default_user = {"tag" : None}
         self.config.register_user(**default_user)
-        apikey = self.bot.db.api_tokens.get_raw("crapi", default={"api_key": None})
+        apikey = await self.bot.db.api_tokens.get_raw("crapi", default={"api_key": None})
         if apikey is None:
             raise ValueError("The Clash Royake API key has not been set. Use [p]set api crapi api_key,YOURAPIKEY")
         self.crapi = clashroyale.OfficialAPI(apikey, is_async=True)
