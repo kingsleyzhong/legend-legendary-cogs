@@ -11,7 +11,7 @@ class BrawlStarsCog(commands.Cog):
         self.config.register_user(**default_user)
 
     async def cog_unload(self):
-        self.bsapi.close()
+        await self.bsapi.close()
         
     async def initialize(self):
         bsapikey = await self.bot.db.api_tokens.get_raw("bsapi", default={"api_key": None})
