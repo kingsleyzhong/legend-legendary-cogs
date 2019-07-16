@@ -62,13 +62,17 @@ class Welcome(commands.Cog):
         await setupChannel.send("You can read about our mission statement and how we function at #information.\nPlease follow our discord and gaming rules which can be viewed in detail at #rules.", embed=welcomeEmbed3)
         await asyncio.sleep(2)
 
+        showCR = True
+        showBS = True
         repeat = True
         while repeat:
             repeat = False
             text = "**Choose a game in which you would like to join us:**\n---------------------------\n<:ClashRoyale:595528714138288148> **Clash Royale**\n---------------------------\n<:BrawlStars:595528113929060374> **Brawl Stars**\n---------------------------\n<:nocancel:595535992199315466> **None of the above**\n---------------------------"
             chooseGameMessage = await setupChannel.send(text)
-            await chooseGameMessage.add_reaction("<:ClashRoyale:595528714138288148>")
-            await chooseGameMessage.add_reaction("<:BrawlStars:595528113929060374>")
+            if showCR:
+                await chooseGameMessage.add_reaction("<:ClashRoyale:595528714138288148>")
+            if showBS:
+                await chooseGameMessage.add_reaction("<:BrawlStars:595528113929060374>")
             await chooseGameMessage.add_reaction("<:nocancel:595535992199315466>")
 
             def check(reaction, user):
@@ -130,9 +134,24 @@ class Welcome(commands.Cog):
 
                         #CHECK FOR LA CLAN
                         
-                        repeat = False
                         await setupChannel.send("You account has been saved!\n\n**WHAT TO DO NEXT?**\n\nPlease go to <#534426447868198922> to open up the channels of your choice and personalize your experience.\n\nCheck out <#440974277894864906> for bot use and <#488321784781996032> to help navigate the site.\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Community*")
+                        if showCR and showBS:
+                            saveOtherGame = await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="Would you like to save Brawl Stars account as well?"))
+                            await saveOtherGame.add_reaction("<:yesconfirm:595535992329601034>")
+                            await saveOtherGame.add_reaction("<:nocancel:595535992199315466>")
+                            def ccheck(reaction, user):
+                                return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
 
+                            reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck)
+
+                            if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
+                                repeat = True
+                                showCR = False
+                            elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
+                                repeat = False
+                        else:
+                            repeat = False
+                        
                     elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
                         await appendLog(f"User's account: No")
                         repeat = True
@@ -210,9 +229,24 @@ class Welcome(commands.Cog):
 
                         #CHECK FOR LA CLUB
                         
-                        repeat = False
                         await setupChannel.send("You account has been saved!\n\n**WHAT TO DO NEXT?**\n\nCheck out <#440974277894864906> for bot use and <#488321784781996032> to help navigate the site.\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Community*")
+                        if showCR and showBS:
+                            saveOtherGame = await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="Would you like to save Clash Royale account as well?"))
+                            await saveOtherGame.add_reaction("<:yesconfirm:595535992329601034>")
+                            await saveOtherGame.add_reaction("<:nocancel:595535992199315466>")
+                            def ccheck(reaction, user):
+                                return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
 
+                            reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck)
+
+                            if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
+                                repeat = True
+                                showBS = False
+                            elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
+                                repeat = False
+                        else:
+                            repeat = False
+                        
                     elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
                         await appendLog(f"User's account: No")
                         repeat = True
@@ -254,6 +288,7 @@ class Welcome(commands.Cog):
                 elif str(reaction.emoji) == "<:HelpIcon:598803665989402624>":
                     await appendLog("Chosen option: Talk to support")
                     await setupChannel.send("ADD: redirect to Modmail")
+                    repeat = True
                     
                 elif str(reaction.emoji) == "<:GoBack:598803665771429904>":
                     await appendLog("Chosen option: Go back to choosing game")
