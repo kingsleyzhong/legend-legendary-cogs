@@ -171,11 +171,11 @@ class Welcome(commands.Cog):
                     player = await self.bsapi.get_player(tag)
                     await appendLog(f"BS account found: {player.name}")
                     playerEmbed = discord.Embed(color=discord.Colour.blue())
-                    playerEmbed.set_author(name=f"{player.name}", icon_url="https://i.imgur.com/Jc2qUB1.jpg")
+                    playerEmbed.set_author(name=f"{player.name}", icon_url="https://i.imgur.com/40U8PnF.png")
                     playerEmbed.add_field(name="Trophies", value=f"<:bstrophy:552558722770141204>{player.trophies}")
                     if player.club is not None:
                         playerEmbed.add_field(name="Club", value=f"<:bsband:600741378497970177>{player.club.name}")
-                        playerEmbed.add_field(name="Role", value=f"<:social:451063078096994304>{player.club.role.capitalize()}")
+                        playerEmbed.add_field(name="Role", value=f"<:bs_role:600748317940645918>{player.club.role.capitalize()}")
                     else:
                         playerEmbed.add_field(name="Club", value="None")
                         
@@ -203,7 +203,7 @@ class Welcome(commands.Cog):
                         try:
                             roleVerifiedMember = member.guild.get_role(597768235324145666)
                             roleBSMember = member.guild.get_role(524418759260241930)
-                            await member.add_roles(roleVerifiedMember, roleCRMember)
+                            await member.add_roles(roleVerifiedMember, roleBSMember)
                             await appendLog(f"Assigned roles: {roleVerifiedMember.name}, {roleBSMember.name}")
                         except discord.Forbidden:
                             await appendLog(f"!!!Couldn't change roles of this user. ({roleVerifiedMember.name}, {roleBSMember.name})")
