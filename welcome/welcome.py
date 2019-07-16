@@ -29,8 +29,8 @@ class Welcome(commands.Cog):
         self.bsapi = brawlstats.Client(bsapikey["api_key"], is_async=True)
     
     async def cog_unload(self):
-        self.crapi.close()
-        self.bsapi.close()
+        await self.crapi.close()
+        await self.bsapi.close()
             
     @commands.guild_only()
     @commands.command(hidden=True)
