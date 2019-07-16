@@ -39,7 +39,7 @@ class Welcome(commands.Cog):
         setupChannel = await member.guild.create_text_channel(member.name, category=welcomeCategory, overwrites=overwrites, topic=f"Welcoming channel for {member.display_name} ({member.id})" , reason=f"Channel created for {member.display_name} role setup.")
         welcomeLog = self.bot.get_channel(598437710868512798)
         logMessages = []
-        logMessages[0] = await welcomeLog.send(f"--------------------\n__**{member.display_name}:**__")
+        logMessages.append(await welcomeLog.send(f"--------------------\n__**{member.display_name}:**__"))
         async def appendLog(txt):
             count = 0
             for page in redbot.core.utils.chat_formatting.pagify(txt):
