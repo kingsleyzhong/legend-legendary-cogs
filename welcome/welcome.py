@@ -32,7 +32,7 @@ class Welcome(commands.Cog):
     async def do_setup(self, member):
         welcomeCategory = discord.utils.get(member.guild.categories, id=598437481775497216)
         overwrites = {member.guild.default_role: discord.PermissionOverwrite(read_messages=False), member: discord.PermissionOverwrite(read_messages=True)}
-        setupChannel = await member.guild.create_text_channel(member.name, category=welcomeCategory, overwrites=overwrites, topic=str(member.id), reason=f"Channel created for {member.display_name} role setup.")
+        setupChannel = await member.guild.create_text_channel(member.name, category=welcomeCategory, overwrites=overwrites, topic=f"Welcoming channel for {member.display_name} ({member.id})" , reason=f"Channel created for {member.display_name} role setup.")
         welcomeLog = self.bot.get_channel(598437710868512798)
         logMessage = await welcomeLog.send(f"--------------------\n__**{member.display_name}:**__")
         async def appendLog(txt):
@@ -199,6 +199,6 @@ class Welcome(commands.Cog):
                     repeat = True
 
         await appendLog(f"**Finished**")
-        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
+        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\n\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
         await asyncio.sleep(300)
         await setupChannel.delete(reason="Welcoming process finished.")
