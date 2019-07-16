@@ -303,7 +303,7 @@ class Welcome(commands.Cog):
                         except discord.Forbidden:
                             await appendLog(f"!!!Couldn't change roles of this user. ({roleVisitor.name})")
                             repeat = False
-                         await setupChannel.send("You have been given access to our general channels as a visitor. If you like to gain member - exclusive - access you can always restart the setup-procedure by doing `/setup`.\n\nWe hope you enjoy your stay here. If you might have any questions or require support don't refrain on sending <@590906101554348053> a DM and our staff will be with you shortly!\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance*")
+                        await setupChannel.send("You have been given access to our general channels as a visitor. If you like to gain member - exclusive - access you can always restart the setup-procedure by doing `/setup`.\n\nWe hope you enjoy your stay here. If you might have any questions or require support don't refrain on sending <@590906101554348053> a DM and our staff will be with you shortly!\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance*")
                         
                     elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
                         repeat = True
