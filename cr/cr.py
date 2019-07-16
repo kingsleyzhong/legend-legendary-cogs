@@ -17,7 +17,7 @@ class ClashRoyaleCog(commands.Cog):
         self.crapi = clashroyale.OfficialAPI(apikey["api_key"], is_async=True)
 
     async def cog_unload(self):
-        self.bsapi.close()
+        self.crapi.close()
         
     def badEmbed(self, text):
         bembed = discord.Embed(color=0xff0000)
