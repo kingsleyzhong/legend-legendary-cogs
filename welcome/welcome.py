@@ -56,7 +56,7 @@ class Welcome(commands.Cog):
             await member.add_roles(roleNewcomer, roleMemberDivider, roleSubscriptionDivider)
             await appendLog(f"Assigned roles: {roleNewcomer.name}, Member Divider, Subscription Divider")
         except discord.Forbidden:
-            await appendLog(f"!!!Couldn't change roles of this user. ({roleNewcomer.name}, Member Divider, Subscription Divider)")
+            await appendLog(f":exclamation:Couldn't change roles of this user. ({roleNewcomer.name}, Member Divider, Subscription Divider)")
 
         welcomeEmbed = discord.Embed(colour = discord.Colour.blue())
         welcomeEmbed.set_image(url="https://i.imgur.com/wwhgP4f.png")
@@ -127,9 +127,10 @@ class Welcome(commands.Cog):
                             await member.edit(nick=nick[:31])
                             await appendLog(f"Nickname changed: {nick[:31]}")
                         except discord.Forbidden:
-                            await appendLog(f"!!!Couldn't change nickname of this user. ({nick[:31]})")
+                            await appendLog(f":exclamation:Couldn't change nickname of this user. ({nick[:31]})")
 
                         await self.crconfig.user(member).tag.set(tag)
+                        await appendLog("Saved tag: Clash Royale")
 
                         try:
                             roleVerifiedMember = member.guild.get_role(597768235324145666)
@@ -137,7 +138,7 @@ class Welcome(commands.Cog):
                             await member.add_roles(roleVerifiedMember, roleCRMember)
                             await appendLog(f"Assigned roles: {roleVerifiedMember.name}, {roleCRMember.name}")
                         except discord.Forbidden:
-                            await appendLog(f"!!!Couldn't change roles of this user. ({roleVerifiedMember.name}, {roleCRMember.name})")
+                            await appendLog(f":exclamation:Couldn't change roles of this user. ({roleVerifiedMember.name}, {roleCRMember.name})")
 
                         #CHECK FOR LA CLAN
                         
@@ -154,9 +155,11 @@ class Welcome(commands.Cog):
                                 repeat = False
                                 
                             if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
+                                await appendLog("Save other game: Yes")
                                 repeat = True
                                 showCR = False
                             elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
+                                await appendLog("Save other game: No")
                                 repeat = False
                         else:
                             repeat = False
@@ -168,19 +171,19 @@ class Welcome(commands.Cog):
                 except clashroyale.NotFoundError as e:
                     repeat = True
                     await setupChannel.send("No player with this tag found, try again!")
-                    await appendLog(f"Error occured: {str(e)}")
+                    await appendLog(f":exclamation:Error occured: {str(e)}")
                 except ValueError as e:
                     repeat = True
                     await setupChannel.send(f"**{str(e)}\nTry again or send a personal message to <@590906101554348053>!**")
-                    await appendLog(f"Error occured: {str(e)}")
+                    await appendLog(f":exclamation:Error occured: {str(e)}")
                 except clashroyale.RequestError as e:
                     repeat = True
                     await setupChannel.send(f"Clash Royale API is offline, please try again later! ({str(e)})")
-                    await appendLog(f"Error occured: {str(e)}")
+                    await appendLog(f":exclamation:Error occured: {str(e)}")
                 except Exception as e:
                     repeat = True
                     await setupChannel.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
-                    await appendLog(f"Error occured: {str(e)}")
+                    await appendLog(f":exclamation:Error occured: {str(e)}")
 
 
             elif str(reaction.emoji) == "<:BrawlStars:595528113929060374>":
@@ -223,10 +226,11 @@ class Welcome(commands.Cog):
                             await member.edit(nick=nick[:31])
                             await appendLog(f"Nickname changed: {nick[:31]}")
                         except discord.Forbidden:
-                            await appendLog(f"!!!Couldn't change nickname of this user. ({nick[:31]})")
+                            await appendLog(f":exclamation:Couldn't change nickname of this user. ({nick[:31]})")
 
                         #ADD TAG SAVING
                         #await self.crconfig.user(member).tag.set(tag)
+                        await appendLog("Saved tag: Brawl Stars")
 
                         try:
                             roleVerifiedMember = member.guild.get_role(597768235324145666)
@@ -234,7 +238,7 @@ class Welcome(commands.Cog):
                             await member.add_roles(roleVerifiedMember, roleBSMember)
                             await appendLog(f"Assigned roles: {roleVerifiedMember.name}, {roleBSMember.name}")
                         except discord.Forbidden:
-                            await appendLog(f"!!!Couldn't change roles of this user. ({roleVerifiedMember.name}, {roleBSMember.name})")
+                            await appendLog(f":exclamation:Couldn't change roles of this user. ({roleVerifiedMember.name}, {roleBSMember.name})")
 
                         #CHECK FOR LA CLUB
                         
@@ -250,9 +254,11 @@ class Welcome(commands.Cog):
                             except asyncio.TimeoutError:
                                 repeat = False
                             if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
+                                await appendLog("Save other game: Yes")
                                 repeat = True
                                 showBS = False
                             elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
+                                await appendLog("Save other game: No")
                                 repeat = False
                         else:
                             repeat = False
@@ -264,15 +270,15 @@ class Welcome(commands.Cog):
                 except brawlstats.errors.NotFoundError as e:
                     repeat = True
                     await setupChannel.send("No player with this tag found, try again!")
-                    await appendLog(f"Error occured: {str(e)}")
+                    await appendLog(f":exclamation:Error occured: {str(e)}")
                 except brawlstats.errors.RequestError as e:
                     repeat = True
                     await setupChannel.send(f"Brawl Stars API is offline, please try again later! ({str(e)})")
-                    await appendLog(f"Error occured: {str(e)}")
+                    await appendLog(f":exclamation:Error occured: {str(e)}")
                 except Exception as e:
                     repeat = True
                     await setupChannel.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
-                    await appendLog(f"Error occured: {str(e)}")
+                    await appendLog(f":exclamation:Error occured: {str(e)}")
                     
             elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
                 await appendLog("Chosen game: None of the above")
@@ -289,7 +295,7 @@ class Welcome(commands.Cog):
                 if str(reaction.emoji) == "<:Search:598803244512313355>":
                     await appendLog("Chosen option: Just visiting")
                     
-                    visitorConfirmation = await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="Are you sure you want to join this server as a guest? Connecting your account to a Supercell game grants you unique features and access to personalized game content."))
+                    visitorConfirmation = await setupChannel.send("Are you sure you want to join this server as a **visitor**? Connecting your Discord account to a Supercell game grants you unique features and access to personalized game content.")
                     await visitorConfirmation.add_reaction("<:yesconfirm:595535992329601034>")
                     await visitorConfirmation.add_reaction("<:nocancel:595535992199315466>")
                     def vcheck(reaction, user):
@@ -299,9 +305,9 @@ class Welcome(commands.Cog):
                         try:
                             roleVisitor = member.guild.get_role(472632693461614593)
                             await member.add_roles(roleVisitor)
-                            await appendLog(f"Assigned roles: {roleNewcomer.name}")
+                            await appendLog(f"Assigned roles: {roleVisitor.name}")
                         except discord.Forbidden:
-                            await appendLog(f"!!!Couldn't change roles of this user. ({roleVisitor.name})")
+                            await appendLog(f":exclamation:Couldn't change roles of this user. ({roleVisitor.name})")
                             repeat = False
                         await setupChannel.send("You have been given access to our general channels as a visitor. If you like to gain member - exclusive - access you can always restart the setup-procedure by doing `/setup`.\n\nWe hope you enjoy your stay here. If you might have any questions or require support don't refrain on sending <@590906101554348053> a DM and our staff will be with you shortly!\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance*")
                         
@@ -321,7 +327,7 @@ class Welcome(commands.Cog):
             await member.remove_roles(roleNewcomer)
             await appendLog(f"Removed roles: {roleNewcomer.name}")
         except discord.Forbidden:
-            await appendLog(f"!!!Couldn't remove roles of this user. ({roleNewcomer.name})")
+            await appendLog(f":exclamation:Couldn't remove roles of this user. ({roleNewcomer.name})")
         
         await appendLog(f"**Finished**")
         await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\n\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
