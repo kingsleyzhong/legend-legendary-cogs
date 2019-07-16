@@ -27,10 +27,6 @@ class Welcome(commands.Cog):
         if bsapikey["api_key"] is None:
             raise ValueError("The Brawl Stars API key has not been set. Use [p]set api bsapi api_key,YOURAPIKEY")
         self.bsapi = brawlstats.Client(bsapikey["api_key"], is_async=True)
-    
-    async def cog_unload(self):
-        await self.crapi.close()
-        await self.bsapi.close()
             
     @commands.guild_only()
     @commands.command(hidden=True)
