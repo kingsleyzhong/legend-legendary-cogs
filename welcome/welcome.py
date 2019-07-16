@@ -198,5 +198,6 @@ class Welcome(commands.Cog):
                     repeat = True
 
         await appendLog(f"**Finished**")
+        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\nIf you have any questions or need help please send a personal message to <@590906101554348053>."))
         await asyncio.sleep(300)
         await setupChannel.delete(reason="Welcoming process finished.")
