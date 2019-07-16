@@ -38,10 +38,13 @@ class Welcome(commands.Cog):
         overwrites = {member.guild.default_role: discord.PermissionOverwrite(read_messages=False), member: discord.PermissionOverwrite(read_messages=True)}
         setupChannel = await member.guild.create_text_channel(member.name, category=welcomeCategory, overwrites=overwrites, topic=f"Welcoming channel for {member.display_name} ({member.id})" , reason=f"Channel created for {member.display_name} role setup.")
         welcomeLog = self.bot.get_channel(598437710868512798)
-        logMessage = await welcomeLog.send(f"--------------------\n__**{member.display_name}:**__")
+        logMessages = []
+        logMessage[0] = await welcomeLog.send(f"--------------------\n__**{member.display_name}:**__")
         async def appendLog(txt):
-            await logMessage.edit(content=f"{logMessage.content}\n{txt}")
-
+            count = 0
+            for page in redbot.core.utils.chat_formatting.pagify(txt):
+                await logMessages[count].edit(content=f"{logMessages[count].content}\n{page}")
+                count += 1
         try:
             roleNewcomer = member.guild.get_role(597767307397169173)
             roleMemberDivider = member.guild.get_role(597769836097044480)
@@ -141,9 +144,11 @@ class Welcome(commands.Cog):
                             await saveOtherGame.add_reaction("<:nocancel:595535992199315466>")
                             def ccheck(reaction, user):
                                 return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
-
-                            reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck)
-
+                            try:
+                                reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck, timeout=600)
+                            except asyncio.TimeoutError:
+                                repeat = False
+                                
                             if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
                                 repeat = True
                                 showCR = False
@@ -236,9 +241,10 @@ class Welcome(commands.Cog):
                             await saveOtherGame.add_reaction("<:nocancel:595535992199315466>")
                             def ccheck(reaction, user):
                                 return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
-
-                            reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck)
-
+                            try:
+                                reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck, timeout=600)
+                            except asyncio.TimeoutError:
+                                repeat = False
                             if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
                                 repeat = True
                                 showBS = False
