@@ -10,6 +10,7 @@ class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.crconfig = Config.get_conf(None, identifier=2512325, cog_name="ClashRoyaleCog")
+        self.bsconfig = Config.get_conf(None, identifier=5245652, cog_name="BrawlStarsCog")
 
     #@commands.Cog.listener()
     async def on_member_join(self, member):
@@ -27,7 +28,7 @@ class Welcome(commands.Cog):
             raise ValueError("The Brawl Stars API key has not been set. Use [p]set api bsapi api_key,YOURAPIKEY")
         self.bsapi = brawlstats.Client(bsapikey["api_key"], is_async=True)
     
-    async def cog_unload(self):
+    def cog_unload(self):
         self.crapi.close()
         self.bsapi.close()
             
@@ -151,10 +152,10 @@ class Welcome(commands.Cog):
                             saveOtherGame = await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="Would you like to save Brawl Stars account as well?"))
                             await saveOtherGame.add_reaction("<:yesconfirm:595535992329601034>")
                             await saveOtherGame.add_reaction("<:nocancel:595535992199315466>")
-                            def ccheck(reaction, user):
+                            def ocheck(reaction, user):
                                 return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
                             try:
-                                reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck, timeout=600)
+                                reaction, _ = await self.bot.wait_for('reaction_add', check=ocheck, timeout=600)
                             except asyncio.TimeoutError:
                                 repeat = False
                                 
@@ -232,8 +233,7 @@ class Welcome(commands.Cog):
                         except discord.Forbidden:
                             await appendLog(f":exclamation:Couldn't change nickname of this user. ({nick[:31]})")
 
-                        #ADD TAG SAVING
-                        #await self.crconfig.user(member).tag.set(tag)
+                        await self.bsconfig.user(member).tag.set(tag)
                         await appendLog("Saved tag: Brawl Stars")
 
                         try:
@@ -251,10 +251,10 @@ class Welcome(commands.Cog):
                             saveOtherGame = await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="Would you like to save Clash Royale account as well?"))
                             await saveOtherGame.add_reaction("<:yesconfirm:595535992329601034>")
                             await saveOtherGame.add_reaction("<:nocancel:595535992199315466>")
-                            def ccheck(reaction, user):
+                            def otcheck(reaction, user):
                                 return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
                             try:
-                                reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck, timeout=600)
+                                reaction, _ = await self.bot.wait_for('reaction_add', check=otcheck, timeout=600)
                             except asyncio.TimeoutError:
                                 repeat = False
                             if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
