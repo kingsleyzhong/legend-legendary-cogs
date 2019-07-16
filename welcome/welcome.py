@@ -288,23 +288,41 @@ class Welcome(commands.Cog):
 
                 if str(reaction.emoji) == "<:Search:598803244512313355>":
                     await appendLog("Chosen option: Just visiting")
-                    try:
-                        roleVisitor = member.guild.get_role(472632693461614593)
-                        await member.add_roles(roleVisitor)
-                        await appendLog(f"Assigned roles: {roleNewcomer.name}")
-                    except discord.Forbidden:
-                        await appendLog(f"!!!Couldn't change roles of this user. ({roleVisitor.name})")
+                    
+                    visitorConfirmation = await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="Are you sure you want to join this server as a guest? Connecting your account to a Supercell game grants you unique features and access to personalized game content."))
+                    await visitorConfirmation.add_reaction("<:yesconfirm:595535992329601034>")
+                    await visitorConfirmation.add_reaction("<:nocancel:595535992199315466>")
+                    def vcheck(reaction, user):
+                        return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
+                    reaction, _ = await self.bot.wait_for('reaction_add', check=vcheck)
+                    if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
+                        try:
+                            roleVisitor = member.guild.get_role(472632693461614593)
+                            await member.add_roles(roleVisitor)
+                            await appendLog(f"Assigned roles: {roleNewcomer.name}")
+                        except discord.Forbidden:
+                            await appendLog(f"!!!Couldn't change roles of this user. ({roleVisitor.name})")
+                            repeat = False
+                         await setupChannel.send("You have been given access to our general channels as a visitor. If you like to gain member - exclusive - access you can always restart the setup-procedure by doing `/setup`.\n\nWe hope you enjoy your stay here. If you might have any questions or require support don't refrain on sending <@590906101554348053> a DM and our staff will be with you shortly!\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance*")
+                        
+                    elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
+                        repeat = True
                         
                 elif str(reaction.emoji) == "<:HelpIcon:598803665989402624>":
                     await appendLog("Chosen option: Talk to support")
-                    await setupChannel.send("ADD: redirect to Modmail")
+                    await setupChannel.send("You have stated that you require support, please send a DM to <@590906101554348053> and state the problem you require support for. Once received our staff will be with you shortly!")
+                    await asyncio.sleep(5)
                     repeat = True
                     
                 elif str(reaction.emoji) == "<:GoBack:598803665771429904>":
                     await appendLog("Chosen option: Go back to choosing game")
                     repeat = True
-
-        #REMOVE NEWCOMER
+        try:
+            await member.remove_roles(roleNewcomer)
+            await appendLog(f"Removed roles: {roleNewcomer.name}")
+        except discord.Forbidden:
+            await appendLog(f"!!!Couldn't remove roles of this user. ({roleNewcomer.name})")
+        
         await appendLog(f"**Finished**")
         await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\n\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
         await asyncio.sleep(300)
