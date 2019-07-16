@@ -16,7 +16,7 @@ class ClashRoyaleCog(commands.Cog):
             raise ValueError("The Clash Royale API key has not been set. Use [p]set api crapi api_key,YOURAPIKEY")
         self.crapi = clashroyale.OfficialAPI(apikey["api_key"], is_async=True)
 
-    def cog_unload(self):
+    async def cog_unload(self):
         self.bsapi.close()
         
     def badEmbed(self, text):
