@@ -1,5 +1,6 @@
 import discord
 from redbot.core import commands, Config, checks
+from redbot.core.utils.chat_formatting import pagify
 import clashroyale
 import brawlstats
 import asyncio
@@ -42,7 +43,7 @@ class Welcome(commands.Cog):
         logMessages.append(await welcomeLog.send(f"--------------------\n__**{member.display_name}:**__"))
         async def appendLog(txt):
             count = 0
-            for page in redbot.core.utils.chat_formatting.pagify(txt):
+            for page in pagify(txt):
                 if len(logMessages) < count+1:
                      logMessages[count] = await welcomeLog.send(page)
                 else:
