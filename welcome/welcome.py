@@ -13,14 +13,18 @@ class Welcome(commands.Cog):
     #@commands.Cog.listener()
     async def on_member_join(self, member):
         if member.guild.id == 440960893916807188 and not member.bot and False:
-
             await self.do_setup(member)
 
     async def initialize(self):
-        apikey = await self.bot.db.api_tokens.get_raw("crapi", default={"api_key": None})
-        if apikey["api_key"] is None:
+        crapikey = await self.bot.db.api_tokens.get_raw("crapi", default={"api_key": None})
+        if crapikey["api_key"] is None:
             raise ValueError("The Clash Royale API key has not been set. Use [p]set api crapi api_key,YOURAPIKEY")
-        self.crapi = clashroyale.OfficialAPI(apikey["api_key"], is_async=True)
+        self.crapi = clashroyale.OfficialAPI(crapikey["api_key"], is_async=True)
+        
+        bsapikey = await self.bot.db.api_tokens.get_raw("bsapi", default={"api_key": None})
+        if bsapikey["api_key"] is None:
+            raise ValueError("The Brawl Stars API key has not been set. Use [p]set api bsapi api_key,YOURAPIKEY")
+        self.bsapi = brawlstats.Client(bsapikey["api_key"], is_async=True)
             
     @commands.guild_only()
     @commands.command(hidden=True)
@@ -124,11 +128,7 @@ class Welcome(commands.Cog):
                         except discord.Forbidden:
                             await appendLog(f"!!!Couldn't change roles of this user. ({roleVerifiedMember.name}, {roleCRMember.name})")
 
-                        
-                        LAClans = ["1", "2", "3"]
-                        if player.clan is not None and player.clan in LAClans:
-                            #give LA_CR_Member + clan role
-                            await setupChannel.send(f"Give LA_CR_Member and Clan role.")
+                        #CHECK FOR LA CLAN
                         
                         repeat = False
                         await setupChannel.send("You account has been saved!\n\n**WHAT TO DO NEXT?**\n\nPlease go to <#534426447868198922> to open up the channels of your choice and personalize your experience.\n\nCheck out <#440974277894864906> for bot use and <#488321784781996032> to help navigate the site.\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Community*")
@@ -143,7 +143,7 @@ class Welcome(commands.Cog):
                     await appendLog(f"Error occured: {str(e)}")
                 except ValueError as e:
                     repeat = True
-                    await setupChannel.send(f"**{str(e)}\nTry again or contact support in #support!**")
+                    await setupChannel.send(f"**{str(e)}\nTry again or send a personal message to <@590906101554348053>!**")
                     await appendLog(f"Error occured: {str(e)}")
                 except clashroyale.RequestError as e:
                     repeat = True
@@ -151,14 +151,15 @@ class Welcome(commands.Cog):
                     await appendLog(f"Error occured: {str(e)}")
                 except Exception as e:
                     repeat = True
-                    await setupChannel.send("**Something went wrong, please contact support in #support or try again!**")
+                    await setupChannel.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
                     await appendLog(f"Error occured: {str(e)}")
-
 
 
             elif str(reaction.emoji) == "<:BrawlStars:595528113929060374>":
                 await appendLog("Chosen game: Brawl Stars")
-                await setupChannel.send(embed=discord.Embed(title="You chose Brawl Stars", description="Please tell me your tag!"))
+                sendTagEmbed = discord.Embed(title="Please tell me your Brawl Stars tag!", colour = discord.Colour.blue())
+                sendTagEmbed.set_image(url="https://i.imgur.com/trjFkYP.png")
+                await setupChannel.send(embed=sendTagEmbed)
                 def checkmsgbs(m):
                     return m.channel == setupChannel and m.author == member
                 tagMessage = await self.bot.wait_for('message', check=checkmsgbs)
@@ -166,16 +167,69 @@ class Welcome(commands.Cog):
                 if tag.startswith("#"):
                     tag = tag.strip('#')
 
-                #try:
-                player = await self.bot.bsapi.get_player(tag)
-                await setupChannel.send(f"BS account {player.name} found!")
-                #except brawlstats.errors.NotFoundError as e:
-                    #return await setupChannel.send("No player with this tag found, try again!")
-                #except brawlstats.errors.RequestError as e:
-                #    return await setupChannel.send(f"BS API is offline, please try again later! ({str(e)})")
-                #except Exception as e:
-                #    return await setupChannel.send("Something went wrong, this is unusual and shouldn't happen. Please message the bot to report this error.")
-        
+                try:
+                    player = await self.bsapi.get_player(tag)
+                    await appendLog(f"BS account found: {player.name}")
+                    playerEmbed = discord.Embed(color=discord.Colour.blue())
+                    playerEmbed.set_author(name=f"{player.name}", icon_url="https://i.imgur.com/Jc2qUB1.jpg")
+                    playerEmbed.add_field(name="Trophies", value=f"<:bstrophy:552558722770141204>{player.trophies}")
+                    if player.club is not None:
+                        playerEmbed.add_field(name="Club", value=f"<:bsband:600741378497970177>{player.club.name}")
+                        playerEmbed.add_field(name="Role", value=f"<:social:451063078096994304>{player.club.role.capitalize()}")
+                    else:
+                        playerEmbed.add_field(name="Club", value="None")
+                        
+                    playerEmbed.add_field(name="Is this your account? (Choose reaction)", value="<:yesconfirm:595535992329601034> Yes\t<:nocancel:595535992199315466> No", inline=False)
+                    confirmMessage = await setupChannel.send(f"**Brawl Stars** account with tag **#{tag.upper()}** found:", embed=playerEmbed)
+                    await confirmMessage.add_reaction("<:yesconfirm:595535992329601034>")
+                    await confirmMessage.add_reaction("<:nocancel:595535992199315466>")
+                    def ccheck(reaction, user):
+                        return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
+
+                    reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck)
+
+                    if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
+                        await appendLog(f"User's account: Yes")
+                        nick=f"{player.name} | {player.club.name}" if player.club is not None else f"{player.name}"
+                        try:
+                            await member.edit(nick=nick[:31])
+                            await appendLog(f"Nickname changed: {nick[:31]}")
+                        except discord.Forbidden:
+                            await appendLog(f"!!!Couldn't change nickname of this user. ({nick[:31]})")
+
+                        #ADD TAG SAVING
+                        #await self.crconfig.user(member).tag.set(tag)
+
+                        try:
+                            roleVerifiedMember = member.guild.get_role(597768235324145666)
+                            roleBSMember = member.guild.get_role(524418759260241930)
+                            await member.add_roles(roleVerifiedMember, roleCRMember)
+                            await appendLog(f"Assigned roles: {roleVerifiedMember.name}, {roleBSMember.name}")
+                        except discord.Forbidden:
+                            await appendLog(f"!!!Couldn't change roles of this user. ({roleVerifiedMember.name}, {roleBSMember.name})")
+
+                        #CHECK FOR LA CLUB
+                        
+                        repeat = False
+                        await setupChannel.send("You account has been saved!\n\n**WHAT TO DO NEXT?**\n\nCheck out <#440974277894864906> for bot use and <#488321784781996032> to help navigate the site.\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Community*")
+
+                    elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
+                        await appendLog(f"User's account: No")
+                        repeat = True
+                
+                except brawlstats.errors.NotFoundError as e:
+                    repeat = True
+                    await setupChannel.send("No player with this tag found, try again!")
+                    await appendLog(f"Error occured: {str(e)}")
+                except brawlstats.errors.RequestError as e:
+                    repeat = True
+                    await setupChannel.send(f"Brawl Stars API is offline, please try again later! ({str(e)})")
+                    await appendLog(f"Error occured: {str(e)}")
+                except Exception as e:
+                    repeat = True
+                    await setupChannel.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
+                    await appendLog(f"Error occured: {str(e)}")
+                    
             elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
                 await appendLog("Chosen game: None of the above")
                 text = "**Choose an option:**\n-------------------------------------\n<:Search:598803244512313355> **Just visiting**\n-------------------------------------\n<:HelpIcon:598803665989402624> **Talk to support**\n-------------------------------------\n<:GoBack:598803665771429904> **Go back to choosing a game**\n-------------------------------------"
@@ -190,14 +244,22 @@ class Welcome(commands.Cog):
 
                 if str(reaction.emoji) == "<:Search:598803244512313355>":
                     await appendLog("Chosen option: Just visiting")
-                    await setupChannel.send("ADD: give guest role")
+                    try:
+                        roleVisitor = member.guild.get_role(472632693461614593)
+                        await member.add_roles(roleVisitor)
+                        await appendLog(f"Assigned roles: {roleNewcomer.name}")
+                    except discord.Forbidden:
+                        await appendLog(f"!!!Couldn't change roles of this user. ({roleVisitor.name})")
+                        
                 elif str(reaction.emoji) == "<:HelpIcon:598803665989402624>":
                     await appendLog("Chosen option: Talk to support")
                     await setupChannel.send("ADD: redirect to Modmail")
+                    
                 elif str(reaction.emoji) == "<:GoBack:598803665771429904>":
                     await appendLog("Chosen option: Go back to choosing game")
                     repeat = True
 
+        #REMOVE NEWCOMER
         await appendLog(f"**Finished**")
         await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\n\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
         await asyncio.sleep(300)
