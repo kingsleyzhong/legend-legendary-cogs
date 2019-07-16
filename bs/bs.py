@@ -10,7 +10,7 @@ class BrawlStarsCog(commands.Cog):
         default_user = {"tag" : None}
         self.config.register_user(**default_user)
 
-    def cog_unload(self):
+    async def cog_unload(self):
         self.bsapi.close()
         
     async def initialize(self):
