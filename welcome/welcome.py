@@ -8,6 +8,7 @@ class Welcome(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.crconfig = Config.get_conf(None, identifier=2512325, cog_name="ClashRoyaleCog")
 
     #@commands.Cog.listener()
     async def on_member_join(self, member):
@@ -113,7 +114,7 @@ class Welcome(commands.Cog):
                         except discord.Forbidden:
                             await appendLog(f"!!!Couldn't change nickname of this user. ({nick[:31]})")
 
-                        #SAVE TAG HERE!!!
+                        await self.crconfig.user(member).tag.set(tag)
 
                         try:
                             roleVerifiedMember = member.guild.get_role(597768235324145666)
@@ -198,6 +199,6 @@ class Welcome(commands.Cog):
                     repeat = True
 
         await appendLog(f"**Finished**")
-        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\nIf you have any questions or need help please send a personal message to <@590906101554348053>."))
+        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
         await asyncio.sleep(300)
         await setupChannel.delete(reason="Welcoming process finished.")
