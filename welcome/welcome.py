@@ -12,9 +12,9 @@ class Welcome(commands.Cog):
         self.crconfig = Config.get_conf(None, identifier=2512325, cog_name="ClashRoyaleCog")
         self.bsconfig = Config.get_conf(None, identifier=5245652, cog_name="BrawlStarsCog")
 
-    #@commands.Cog.listener()
+    @commands.Cog.listener()
     async def on_member_join(self, member):
-        if member.guild.id == 440960893916807188 and not member.bot and False:
+        if member.guild.id == 440960893916807188 and not member.bot:
             await self.do_setup(member)
 
     async def initialize(self):
@@ -330,6 +330,6 @@ class Welcome(commands.Cog):
             await appendLog(f":exclamation:Couldn't remove roles of this user. ({roleNewcomer.name})")
         
         await appendLog(f"**Finished**")
-        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\n\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
-        await asyncio.sleep(300)
+        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 15 minutes!\n\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
+        await asyncio.sleep(900)
         await setupChannel.delete(reason="Welcoming process finished.")
