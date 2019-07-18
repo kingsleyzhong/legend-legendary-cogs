@@ -37,7 +37,7 @@ class Welcome(commands.Cog):
 
     async def do_setup(self, member):
         welcomeCategory = discord.utils.get(member.guild.categories, id=598437481775497216)
-        overwrites = {member.guild.default_role: discord.PermissionOverwrite(read_messages=False), member: discord.PermissionOverwrite(read_messages=True)}
+        overwrites = {member.guild.default_role: discord.PermissionOverwrite(read_messages=False), member: discord.PermissionOverwrite(read_messages=True, send_messages=True, read_message_history=True)}
         setupChannel = await member.guild.create_text_channel(member.name, category=welcomeCategory, overwrites=overwrites, topic=f"Welcoming channel for {member.display_name} ({member.id})" , reason=f"Channel created for {member.display_name} role setup.")
         welcomeLog = self.bot.get_channel(598437710868512798)
         logMessages = []
