@@ -38,7 +38,7 @@ class ClashRoyaleCog(commands.Cog):
 
         try:
             player = await self.crapi.get_player("#" + tag)
-            await self.config.user(ctx.author).tag.set(tag)
+            await self.config.user(member).tag.set(tag)
             await ctx.send(embed = self.goodEmbed("CR account {} was saved to {}".format(player.name, member.name)))
             
         except clashroyale.NotFoundError as e:
