@@ -48,7 +48,7 @@ class ClashRoyaleCog(commands.Cog):
             await ctx.send(embed = self.badEmbed(f"CR API is offline, please try again later! ({str(e)})"))
         
         except Exception as e:
-            await ctx.send(embed = self.badEmbed("Something went wrong, this is unusual and shouldn't happen. Please message the bot to report this error."))
+            await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
 
     @commands.command(aliases=['p'])
     async def profile(self, ctx, member=None):
@@ -104,7 +104,8 @@ class ClashRoyaleCog(commands.Cog):
             return await ctx.send(embed = self.badEmbed(f"CR API is offline, please try again later! ({str(e)})"))
         
         except Exception as e:
-            return await ctx.send(embed = self.badEmbed("Something went wrong, this is unusual and shouldn't happen. Please message the bot to report this error."))
+            return await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
+
 
         embed=discord.Embed(color=discord.Colour.blue())
         embed.set_author(name=f"{player.name} {player.tag}", icon_url="https://i.imgur.com/Qs0Ter9.png")
