@@ -94,7 +94,7 @@ class BrawlStarsCog(commands.Cog):
             embed = discord.Embed(title="Invalid argument!", colour=discord.Colour.red(), description=desc)
             return await ctx.send(embed=embed)
         try:
-            player = await await self.bsapi.get_player(tag)
+            player = await self.bsapi.get_player(tag)
             
         except brawlstats.errors.NotFoundError:
             return await ctx.send(embed = self.badEmbed("No clan with this tag found, try again!"))
