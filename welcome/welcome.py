@@ -330,6 +330,6 @@ class Welcome(commands.Cog):
             await appendLog(f":exclamation:Couldn't remove roles of this user. ({roleNewcomer.name})")
         
         await appendLog(f"**Finished**")
-        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 15 minutes!\n\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
-        await asyncio.sleep(900)
+        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\n\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
+        await asyncio.sleep(300)
         await setupChannel.delete(reason="Welcoming process finished.")
