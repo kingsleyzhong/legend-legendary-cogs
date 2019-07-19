@@ -143,7 +143,7 @@ class Welcome(commands.Cog):
 
                         #CHECK FOR LA CLAN
                         
-                        await setupChannel.send("You account has been saved!\n\n**WHAT TO DO NEXT?**\n\nPlease go to <#534426447868198922> to open up the channels of your choice and personalize your experience.\n\nCheck out <#440974277894864906> for bot use and <#488321784781996032> to help navigate the site.\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Community*")
+                        await setupChannel.send("Your account has been saved!\n\n**WHAT TO DO NEXT?**\n\nPlease go to <#534426447868198922> to open up the channels of your choice and personalize your experience.\n\nCheck out <#440974277894864906> for bot use and <#488321784781996032> to help navigate the site.\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Community*")
                         if showCR and showBS:
                             saveOtherGame = await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="Would you like to save Brawl Stars account as well?"))
                             await saveOtherGame.add_reaction("<:yesconfirm:595535992329601034>")
@@ -242,7 +242,7 @@ class Welcome(commands.Cog):
 
                         #CHECK FOR LA CLUB
                         
-                        await setupChannel.send("You account has been saved!\n\n**WHAT TO DO NEXT?**\n\nCheck out <#440974277894864906> for bot use and <#488321784781996032> to help navigate the site.\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Community*")
+                        await setupChannel.send("Your account has been saved!\n\n**WHAT TO DO NEXT?**\n\nCheck out <#440974277894864906> for bot use and <#488321784781996032> to help navigate the site.\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Community*")
                         if showCR and showBS:
                             saveOtherGame = await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="Would you like to save Clash Royale account as well?"))
                             await saveOtherGame.add_reaction("<:yesconfirm:595535992329601034>")
