@@ -10,12 +10,15 @@ class Tools(commands.Cog):
         default_global = {"countdowns" : {}}
         self.config.register_global(**default_global)
         self.updater.start()
+        
+    def cog_unload(self):
+        self.updater.stop()
 
     def convertToLeft(self, sec):
         if sec > 3600:
             return f"{int(sec/3600)} hours {int((sec%3600)*60)} minutes"
         elif sec > 60:
-            return f"{int(sec/60)} minutes {int(sec%60)} minutes"
+            return f"{int(sec/60)} minutes {int(sec%60)} seconds"
         else:
             return f"{sec} seconds"
 
