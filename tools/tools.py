@@ -21,7 +21,7 @@ class Tools(commands.Cog):
 
     @tasks.loop(seconds=10.0)
     async def updater(self):
-        countdowns = self.config.countdowns()
+        countdowns = await self.config.countdowns()
         for m in countdowns.keys():
             msg = await self.bot.fetch_message(m)
             seconds = cooldowns["m"]-10
