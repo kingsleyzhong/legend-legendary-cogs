@@ -16,6 +16,14 @@ class Welcome(commands.Cog):
     async def on_member_join(self, member):
         if member.guild.id == 440960893916807188 and not member.bot:
             await self.do_setup(member)
+    
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        if member.guild.id == 440960893916807188 and not member.bot:
+            welcomeCategory = discord.utils.get(member.guild.categories, id=598437481775497216)
+            for ch in welcomeCategory.channels:
+                if ch.topic == str(member.id):
+                    await ch.delete(reason="User left.")
 
     async def initialize(self):
         crapikey = await self.bot.db.api_tokens.get_raw("crapi", default={"api_key": None})
@@ -37,8 +45,9 @@ class Welcome(commands.Cog):
 
     async def do_setup(self, member):
         welcomeCategory = discord.utils.get(member.guild.categories, id=598437481775497216)
-        overwrites = {member.guild.default_role: discord.PermissionOverwrite(read_messages=False), member: discord.PermissionOverwrite(read_messages=True, send_messages=True, read_message_history=True)}
-        setupChannel = await member.guild.create_text_channel(member.name, category=welcomeCategory, overwrites=overwrites, topic=f"Welcoming channel for {member.display_name} ({member.id})" , reason=f"Channel created for {member.display_name} role setup.")
+        roleGreeter = member.guild.get_role(495962657887748097)
+        overwrites = {member.guild.default_role: discord.PermissionOverwrite(read_messages=False), member: discord.PermissionOverwrite(read_messages=True, send_messages=True, read_message_history=True, add_reactions=True), roleGreeter: discord.PermissionOverwrite(read_messages=True, send_messages=True, read_message_history=True)}
+        setupChannel = await member.guild.create_text_channel(member.name, category=welcomeCategory, overwrites=overwrites, topic=f"{member.id}" , reason=f"Channel created for {member.display_name} role setup.")
         welcomeLog = self.bot.get_channel(598437710868512798)
         logMessages = []
         logMessages.append(await welcomeLog.send(f"--------------------\n__**{member.display_name}:**__"))
