@@ -33,7 +33,7 @@ class Tools(commands.Cog):
                 await self.config.countdowns.clear_raw(m)
                 await msg.edit(embed=discord.Embed(description="Countdown ended!", colour=discord.Colour.red()))
             else:
-                await msg.edit(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
+                await msg.edit(embed=discord.Embed(description=f"Time left: {self.convertToLeft(seconds)}", colour=discord.Colour.blue()))
                 await self.config.countdowns.set_raw(m, "left", value=seconds)
     
     @updater.before_loop
@@ -60,7 +60,7 @@ class Tools(commands.Cog):
         elif timeunit == "h":
             seconds = amount * 3600
 
-        countdownMessage = await ctx.send(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
+        countdownMessage = await ctx.send(embed=discord.Embed(description=f"Time left: {self.convertToLeft(seconds)}", colour=discord.Colour.blue()))
 
         await self.config.countdowns.set_raw(countdownMessage.id, value={"left" : seconds, "channel" : ctx.channel.id})
 
