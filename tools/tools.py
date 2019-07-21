@@ -1,5 +1,6 @@
 import discord
-from redbot.core import commands, Config, checks, tasks
+from redbot.core import commands, Config, checks
+from discord.ext import tasks
 
 class Tools(commands.Cog):
     
