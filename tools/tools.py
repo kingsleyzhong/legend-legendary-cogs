@@ -23,7 +23,7 @@ class Tools(commands.Cog):
     async def updater(self):
         countdowns = await self.config.countdowns()
         for m in countdowns.keys():
-            chan = self.bot.get_channel(cooldowns["m"]["channel"])
+            chan = self.bot.get_channel(countdowns["m"]["channel"])
             msg = await chan.fetch_message(m)
             seconds = cooldowns["m"]["left"]-10
             await msg.edit(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
