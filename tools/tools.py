@@ -13,9 +13,9 @@ class Tools(commands.Cog):
 
     def convertToLeft(self, sec):
         if sec > 3600:
-            return f"{sec/3600} hours"
+            return f"{int(sec/3600)} hours {int((sec%3600)*60)} minutes"
         elif sec > 60:
-            return f"{sec/60} minutes"
+            return f"{int(sec/60)} minutes {int(sec%60)} minutes"
         else:
             return f"{sec} seconds"
 
@@ -27,7 +27,7 @@ class Tools(commands.Cog):
             msg = await chan.fetch_message(m)
             seconds = countdowns[m]["left"]-10
             await msg.edit(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
-            await self.config.set_raw(m, "left", value=seconds)
+            await self.config.countdowns.set_raw(m, "left", value=seconds)
     
     @updater.before_loop
     async def before_updater(self):
