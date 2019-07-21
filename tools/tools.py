@@ -63,4 +63,5 @@ class Tools(commands.Cog):
         countdownMessage = await ctx.send(embed=discord.Embed(description=f"Time left: {self.convertToLeft(seconds)}", colour=discord.Colour.blue()))
 
         await self.config.countdowns.set_raw(countdownMessage.id, value={"left" : seconds, "channel" : ctx.channel.id})
+        await ctx.message.delete(delay=10)
 
