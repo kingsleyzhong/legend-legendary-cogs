@@ -22,13 +22,13 @@ class Tools(commands.Cog):
         else:
             return f"{sec} seconds"
 
-    @tasks.loop(seconds=10.0)
+    @tasks.loop(seconds=60.0)
     async def updater(self):
         countdowns = await self.config.countdowns()
         for m in countdowns.keys():
             chan = self.bot.get_channel(countdowns[m]["channel"])
             msg = await chan.fetch_message(m)
-            seconds = countdowns[m]["left"]-10
+            seconds = countdowns[m]["left"]-60
             if seconds < 0:
                 await self.config.countdowns.clear_raw(m)
                 await msg.edit(embed=discord.Embed(description="Countdown ended!", colour=discord.Colour.red()))
