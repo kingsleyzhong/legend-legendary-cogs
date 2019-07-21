@@ -40,5 +40,5 @@ class Tools(commands.Cog):
 
         countdownMessage = await ctx.send(embed=discord.Embed(description=self.convertToLeft(seconds)))
 
-        await self.config.countdowns.set_raw(ctx.guild.id, value={ctx.channel.id : {countdownMessage.id : seconds}})
+        await self.config.countdowns.set_raw(ctx.guild.id, ctx.channel.id, countdownMessage.id, value=seconds)
 
