@@ -25,7 +25,7 @@ class Tools(commands.Cog):
         for m in countdowns.keys():
             chan = self.bot.get_channel(countdowns[m]["channel"])
             msg = await chan.fetch_message(m)
-            seconds = cooldowns[m]["left"]-10
+            seconds = countdowns[m]["left"]-10
             await msg.edit(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
             await self.config.set_raw(m, "left", value=seconds)
     
