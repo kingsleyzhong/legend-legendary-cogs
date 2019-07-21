@@ -32,11 +32,11 @@ class Tools(commands.Cog):
         seconds = 0
 
         if timeunit == "s":
-            seconds = timeunit
+            seconds = amount
         elif timeunit == "m":
-            seconds = timeunit * 60
+            seconds = amount * 60
         elif timeunit == "h":
-            seconds = timeunit * 3600
+            seconds = amount * 3600
 
         countdownMessage = await ctx.send(embed=discord.Embed(description=self.convertToLeft(seconds)))
 
