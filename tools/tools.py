@@ -29,8 +29,12 @@ class Tools(commands.Cog):
             chan = self.bot.get_channel(countdowns[m]["channel"])
             msg = await chan.fetch_message(m)
             seconds = countdowns[m]["left"]-10
-            await msg.edit(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
-            await self.config.countdowns.set_raw(m, "left", value=seconds)
+            if seconds < 0:
+                await self.config.countdowns.clear_raw(m)
+                await msg.edit(embed=discord.Embed(description="Countdown ended!", colour=discord.Colour.red()))
+            else:
+                await msg.edit(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
+                await self.config.countdowns.set_raw(m, "left", value=seconds)
     
     @updater.before_loop
     async def before_updater(self):
