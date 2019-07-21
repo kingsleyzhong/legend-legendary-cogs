@@ -16,7 +16,7 @@ class Tools(commands.Cog):
 
     def convertToLeft(self, sec):
         if sec > 3600:
-            return f"{int(sec/3600)} hours {int((sec%60))} minutes"
+            return f"{int(sec/3600)} hours {int((sec%3600)/60)} minutes"
         elif sec > 60:
             return f"{int(sec/60)} minutes {int(sec%60)} seconds"
         else:
