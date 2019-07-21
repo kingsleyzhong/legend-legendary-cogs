@@ -8,6 +8,7 @@ class Tools(commands.Cog):
         self.config = Config.get_conf(self, identifier=2555525)
         default_global = {"countdowns" : {}}
         self.config.register_global(**default_global)
+        self.updater.start()
 
     def convertToLeft(self, sec):
         if sec > 3600:
@@ -17,6 +18,18 @@ class Tools(commands.Cog):
         else:
             return f"{sec} seconds"
 
+    @tasks.loop(seconds=10.0)
+    async def updater(self):
+        countdowns = self.config.countdowns()
+        for m in countdowns.keys():
+            msg = await self.bot.fetch_message(m)
+            seconds = cooldowns["m"]-10
+            await msg.edit(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
+            await self.config.set_raw(m, value=seconds)
+    
+    @updater.before_loop
+    async def before_updater(self):
+        await self.bot.wait_until_ready()
         
     @commands.command()
     async def countdown(self, ctx, amount : int, timeunit : str):
@@ -38,7 +51,7 @@ class Tools(commands.Cog):
         elif timeunit == "h":
             seconds = amount * 3600
 
-        countdownMessage = await ctx.send(embed=discord.Embed(description=self.convertToLeft(seconds)))
+        countdownMessage = await ctx.send(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
 
-        await self.config.countdowns.set_raw(ctx.guild.id, ctx.channel.id, countdownMessage.id, value=seconds)
+        await self.config.countdowns.set_raw(countdownMessage.id, value=seconds)
 
