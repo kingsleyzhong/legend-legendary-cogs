@@ -23,10 +23,11 @@ class Tools(commands.Cog):
     async def updater(self):
         countdowns = await self.config.countdowns()
         for m in countdowns.keys():
-            msg = await self.bot.fetch_message(m)
-            seconds = cooldowns["m"]-10
+            chan = self.bot.get_channel(cooldowns["m"]["channel"])
+            msg = await chan.fetch_message(m)
+            seconds = cooldowns["m"]["left"]-10
             await msg.edit(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
-            await self.config.set_raw(m, value=seconds)
+            await self.config.set_raw(m, "left", value=seconds)
     
     @updater.before_loop
     async def before_updater(self):
@@ -54,5 +55,5 @@ class Tools(commands.Cog):
 
         countdownMessage = await ctx.send(embed=discord.Embed(description=self.convertToLeft(seconds), colour=discord.Colour.blue()))
 
-        await self.config.countdowns.set_raw(countdownMessage.id, value=seconds)
+        await self.config.countdowns.set_raw(countdownMessage.id, value={"left" : seconds, "channel" : ctx.channel.id})
 
