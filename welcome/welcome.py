@@ -15,7 +15,7 @@ class Welcome(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         if member.guild.id == 440960893916807188 and not member.bot:
-            await self.do_setup(member)
+            await self.do_setup(member, new = True)
     
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -43,11 +43,12 @@ class Welcome(commands.Cog):
             member = ctx.author
         await self.do_setup(member)
 
-    async def do_setup(self, member):
+    async def do_setup(self, member, new = False):
         welcomeCategory = discord.utils.get(member.guild.categories, id=598437481775497216)
         roleGreeter = member.guild.get_role(495962657887748097)
         overwrites = {member.guild.default_role: discord.PermissionOverwrite(read_messages=False), member: discord.PermissionOverwrite(read_messages=True, send_messages=True, read_message_history=True, add_reactions=True), roleGreeter: discord.PermissionOverwrite(read_messages=True, send_messages=True, read_message_history=True)}
         setupChannel = await member.guild.create_text_channel(member.name, category=welcomeCategory, overwrites=overwrites, topic=f"{member.id}" , reason=f"Channel created for {member.display_name} role setup.")
+        globalChat = self.bot.get_channel(556425378764423179)
         welcomeLog = self.bot.get_channel(598437710868512798)
         logMessages = []
         logMessages.append(await welcomeLog.send(f"--------------------\n__**{member.display_name}:**__"))
@@ -93,7 +94,7 @@ class Welcome(commands.Cog):
             await chooseGameMessage.add_reaction("<:nocancel:595535992199315466>")
 
             def check(reaction, user):
-                return user == member and str(reaction.emoji) in ["<:ClashRoyale:595528714138288148>", "<:BrawlStars:595528113929060374>", "<:nocancel:595535992199315466>"]
+                return (user == member or user.id == 230947675837562880) and str(reaction.emoji) in ["<:ClashRoyale:595528714138288148>", "<:BrawlStars:595528113929060374>", "<:nocancel:595535992199315466>"]
             reaction, _ = await self.bot.wait_for('reaction_add', check=check)
             
             if str(reaction.emoji) == "<:ClashRoyale:595528714138288148>":
@@ -126,7 +127,7 @@ class Welcome(commands.Cog):
                     await confirmMessage.add_reaction("<:nocancel:595535992199315466>")
 
                     def ccheck(reaction, user):
-                        return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
+                        return (user == member or user.id == 230947675837562880) and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
 
                     reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck)
 
@@ -158,7 +159,7 @@ class Welcome(commands.Cog):
                             await saveOtherGame.add_reaction("<:yesconfirm:595535992329601034>")
                             await saveOtherGame.add_reaction("<:nocancel:595535992199315466>")
                             def ocheck(reaction, user):
-                                return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
+                                return (user == member or user.id == 230947675837562880) and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
                             try:
                                 reaction, _ = await self.bot.wait_for('reaction_add', check=ocheck, timeout=600)
                             except asyncio.TimeoutError:
@@ -225,7 +226,7 @@ class Welcome(commands.Cog):
                     await confirmMessage.add_reaction("<:yesconfirm:595535992329601034>")
                     await confirmMessage.add_reaction("<:nocancel:595535992199315466>")
                     def ccheck(reaction, user):
-                        return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
+                        return (user == member or user.id == 230947675837562880) and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
 
                     reaction, _ = await self.bot.wait_for('reaction_add', check=ccheck)
 
@@ -257,7 +258,7 @@ class Welcome(commands.Cog):
                             await saveOtherGame.add_reaction("<:yesconfirm:595535992329601034>")
                             await saveOtherGame.add_reaction("<:nocancel:595535992199315466>")
                             def otcheck(reaction, user):
-                                return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
+                                return (user == member or user.id == 230947675837562880) and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
                             try:
                                 reaction, _ = await self.bot.wait_for('reaction_add', check=otcheck, timeout=600)
                             except asyncio.TimeoutError:
@@ -298,7 +299,7 @@ class Welcome(commands.Cog):
                 await chooseOtherOption.add_reaction("<:GoBack:598803665771429904>")
 
                 def checkother(reaction, user):
-                    return user == member and str(reaction.emoji) in ["<:Search:598803244512313355>", "<:HelpIcon:598803665989402624>", "<:GoBack:598803665771429904>"]
+                    return (user == member or user.id == 230947675837562880) and str(reaction.emoji) in ["<:Search:598803244512313355>", "<:HelpIcon:598803665989402624>", "<:GoBack:598803665771429904>"]
                 reaction, _ = await self.bot.wait_for('reaction_add', check=checkother)
 
                 if str(reaction.emoji) == "<:Search:598803244512313355>":
@@ -308,7 +309,7 @@ class Welcome(commands.Cog):
                     await visitorConfirmation.add_reaction("<:yesconfirm:595535992329601034>")
                     await visitorConfirmation.add_reaction("<:nocancel:595535992199315466>")
                     def vcheck(reaction, user):
-                        return user == member and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
+                        return (user == member or user.id == 230947675837562880) and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
                     reaction, _ = await self.bot.wait_for('reaction_add', check=vcheck)
                     if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
                         try:
@@ -338,6 +339,8 @@ class Welcome(commands.Cog):
         except discord.Forbidden:
             await appendLog(f":exclamation:Couldn't remove roles of this user. ({roleNewcomer.name})")
         
+        if new:
+            await globalChat.send(f"<:LA:602901892141547540> {member.mention} welcome  to LA Gaming!")
         await appendLog(f"**Finished**")
         await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\n\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
         await asyncio.sleep(300)
