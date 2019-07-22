@@ -82,7 +82,7 @@ class Welcome(commands.Cog):
         welcomeEmbed3.set_image(url="https://i.imgur.com/SkR1NsG.png")
         await setupChannel.send(member.mention, embed=welcomeEmbed)
         await setupChannel.send("We are a gamer run community devoted to enhancing the player experience. We offer comprehensive resources, guidance from veteran gamers, and involvement in a vibrant interactive online community that cater to both casual members and players looking for a more competitive edge. We have an eSports team and host frequent tournaments/events for cash prizes.", embed=welcomeEmbed2)
-        await setupChannel.send("You can read about our mission statement and how we function at #information.\nPlease follow our discord and gaming rules which can be viewed in detail at #rules.", embed=welcomeEmbed3)
+        await setupChannel.send("You can read about our mission statement and how we function at <#597812113888509962>.\nPlease follow our discord and gaming rules which can be viewed in detail at <#597789850749501441>.", embed=welcomeEmbed3)
         await asyncio.sleep(2)
 
         showCR = True
@@ -373,17 +373,15 @@ class Welcome(commands.Cog):
         welcomeEmbed.set_image(url="https://i.imgur.com/wwhgP4f.png")
         welcomeEmbed2 = discord.Embed(colour = discord.Colour.blue())
         welcomeEmbed2.set_image(url="https://i.imgur.com/LOLUk7Q.png")
-        welcomeEmbed3 = discord.Embed(colour = discord.Colour.blue())
-        welcomeEmbed3.set_image(url="https://i.imgur.com/SkR1NsG.png")
         await setupChannel.send(member.mention, embed=welcomeEmbed)
         await setupChannel.send("We are a gamer run community devoted to enhancing the player experience. We offer comprehensive resources, guidance from veteran gamers, and involvement in a vibrant interactive online community that cater to both casual members and players looking for a more competitive edge. We have an eSports team and host frequent tournaments/events for cash prizes.", embed=welcomeEmbed2)
-        await setupChannel.send("You can read about our mission statement and how we function at #information.\nPlease follow our discord and gaming rules which can be viewed in detail at #rules.", embed=welcomeEmbed3)
+        await setupChannel.send("You can read about our mission statement and how we function at #information.\nPlease follow our discord and gaming rules which can be viewed in detail at #rules.")
         await asyncio.sleep(2)
 
         repeat = True
         while repeat:
             repeat = False
-            text = "**Choose one of the options below:**\n------------------------------------------------------\n<:ClashRoyale:595528714138288148> **Save Clash Royale account and join the server**\n------------------------------------------------------\n<:HelpIcon:598803665989402624> **Talk to support**\n------------------------------------------------------"
+            text = "**CHOOSE ONE OF THE OPTIONS BELOW:**\n------------------------------------------------------\n<:ClashRoyale:595528714138288148> **Save Clash Royale account and join the server**\n------------------------------------------------------\n<:HelpIcon:598803665989402624> **Talk to support**\n------------------------------------------------------"
             chooseGameMessage = await setupChannel.send(text)
             await chooseGameMessage.add_reaction("<:ClashRoyale:595528714138288148>")
             await chooseGameMessage.add_reaction("<:HelpIcon:598803665989402624>")
@@ -445,8 +443,34 @@ class Welcome(commands.Cog):
                         except discord.Forbidden:
                             await appendLog(f":exclamation:Couldn't change roles of this user. ({roleMember.name})")
 
-                        #CHECK FOR TROPHY ROLES
+                        trophyRole = None
+                        if player.trophies >= 8000:
+                            trophyRole = member.guild.get_role(600325526007054346)
+                        elif player.trophies >= 7000:
+                            trophyRole = member.guild.get_role(594960052604108811)
+                        elif player.trophies >= 6000:
+                            trophyRole = member.guild.get_role(594960023088660491)
+                        elif player.trophies >= 5000:
+                            trophyRole = member.guild.get_role(594959970181709828)
+                        elif player.trophies >= 4000:
+                            trophyRole = member.guild.get_role(594959895904649257)
+                        elif player.trophies >= 3000:
+                            trophyRole = member.guild.get_role(598396866299953165)
+                        if trophyRole is not None:
+                            try:
+                                await member.add_roles(trophyRole)
+                                await appendLog(f"Assigned roles: {trophyRole.name}")
+                            except discord.Forbidden:
+                                await appendLog(f":exclamation:Couldn't change roles of this user. ({trophyRole.name})")
                         
+                        if player.challengeMaxWins >= 20:
+                            try:
+                                wins20Role = member.guild.get_role(593776990604230656)
+                                await member.add_roles(wins20Role)
+                                await appendLog(f"Assigned roles: {wins20Role.name}")
+                            except discord.Forbidden:
+                                await appendLog(f":exclamation:Couldn't change roles of this user. ({wins20Role.name})")
+
                         await setupChannel.send("Your account has been saved!\n\n**WHAT TO DO NEXT?**\n\nINSERT SOME IMPORTANT CHANNELS HERE\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Fight Club*")
                         
                     elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
