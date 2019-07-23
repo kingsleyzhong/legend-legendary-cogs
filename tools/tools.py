@@ -1,5 +1,6 @@
 import discord
 from redbot.core import commands, Config, checks
+from redbot.core.utils.embed import randomize_colour
 from discord.ext import tasks
 from datetime import datetime
 
@@ -72,6 +73,7 @@ class Tools(commands.Cog):
         intro = await ctx.send("Please head over to a DM with me to answer some questions.")
         await ctx.message.delete(delay=10)
         await intro.delete(delay=10)
+        jobChannel = self.bot.get_channel(602906639217197085)
         
         def check(msg):
             return msg.channel == author.dm_channel and msg.author == author
@@ -86,8 +88,10 @@ class Tools(commands.Cog):
         contact = (await self.bot.wait_for('message', check=check)).content
         await author.send("Description of the job:")
         jobdesc = (await self.bot.wait_for('message', check=check)).content
+        await author.send(f"Done! Your offer was posted in {jobChannel.mention}")
         
-        embed=discord.Embed(colour=discord.Colour.green(), title=job)
+        embed=discord.Embed(title=job)
+        embed.set_thumbnail(url=author.avatar_url)
         embed.add_field(name="Posted by:", value=f"{author.mention} ({author.top_role})", inline=False)
         embed.add_field(name="Date:", value=datetime.now().strftime('%d %b %Y'), inline=False)
         embed.add_field(name="Completion deadline:", value=deadline, inline=False)
@@ -95,8 +99,8 @@ class Tools(commands.Cog):
         embed.add_field(name="How to contact:", value=contact, inline=False)
         embed.add_field(name="Job description:", value=jobdesc, inline=False)
         
-        jobChannel = self.bot.get_channel(599320984675156020)
-        await jobChannel.send(embed=embed)
+        
+        await jobChannel.send(embed=randomize_colour(embed))
         
         
         
