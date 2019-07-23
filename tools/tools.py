@@ -76,19 +76,18 @@ class Tools(commands.Cog):
         def check(msg):
             return msg.channel == author.dm_channel and msg.author == author
         
-        await author.send("Job posting/position opening:")
+        await author.send("Is this job posting or position opening:")
         job = (await self.bot.wait_for('message', check=check)).content
         await author.send("Completion deadline:")
         deadline = (await self.bot.wait_for('message', check=check)).content
-        await author.send("Availability:")
+        await author.send("Availability (who can apply for this job?):")
         availability = (await self.bot.wait_for('message', check=check)).content
-        await author.send("How to contact:")
+        await author.send("How should interested people contact you:")
         contact = (await self.bot.wait_for('message', check=check)).content
-        await author.send("Job description:")
+        await author.send("Description of the job:")
         jobdesc = (await self.bot.wait_for('message', check=check)).content
         
-        embed=discord.Embed(colour=discord.Colour.green())
-        embed.add_field(name=job, value="\u200b", inline=False)
+        embed=discord.Embed(colour=discord.Colour.green(), title=job)
         embed.add_field(name="Posted by:", value=f"{author.mention} ({author.top_role})", inline=False)
         embed.add_field(name="Date:", value=datetime.now().strftime('%d %b %Y'), inline=False)
         embed.add_field(name="Completion deadline:", value=deadline, inline=False)
