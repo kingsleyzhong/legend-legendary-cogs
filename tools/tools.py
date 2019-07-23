@@ -74,7 +74,7 @@ class Tools(commands.Cog):
         await intro.delete(delay=10)
         
         def check(msg):
-            return msg.channel == author.dm_channel
+            return msg.channel == author.dm_channel and msg.author == author
         
         await author.send("Job posting/position opening:")
         job = (await self.bot.wait_for('message', check=check)).content
@@ -88,13 +88,13 @@ class Tools(commands.Cog):
         jobdesc = (await self.bot.wait_for('message', check=check)).content
         
         embed=discord.Embed(colour=discord.Colour.green())
-        embed.add_field(name=job, value="\u200b")
-        embed.add_field(name="Posted by:", value=f"{author.mention} ({author.top_role})")
-        embed.add_field(name="Date:", value=datetime.now().strftime('%d %b %Y'))
-        embed.add_field(name="Completion deadline:", value=deadline)
-        embed.add_field(name="Availability:", value=availability)
-        embed.add_field(name="How to contact:", value=contact)
-        embed.add_field(name="Job description:", value=jobdesc)
+        embed.add_field(name=job, value="\u200b", inline=False)
+        embed.add_field(name="Posted by:", value=f"{author.mention} ({author.top_role})", inline=False)
+        embed.add_field(name="Date:", value=datetime.now().strftime('%d %b %Y'), inline=False)
+        embed.add_field(name="Completion deadline:", value=deadline, inline=False)
+        embed.add_field(name="Availability:", value=availability, inline=False)
+        embed.add_field(name="How to contact:", value=contact, inline=False)
+        embed.add_field(name="Job description:", value=jobdesc, inline=False)
         
         jobChannel = self.bot.get_channel(599320984675156020)
         await jobChannel.send(embed=embed)
