@@ -77,15 +77,15 @@ class Tools(commands.Cog):
             return msg.channel == author.dm_channel
         
         await author.send("Job posting/position opening:")
-        job = (await client.wait_for('message', check=check)).content
+        job = (await self.bot.wait_for('message', check=check)).content
         await author.send("Completion deadline:")
-        deadline = (await client.wait_for('message', check=check)).content
+        deadline = (await self.bot.wait_for('message', check=check)).content
         await author.send("Availability:")
-        availability = (await client.wait_for('message', check=check)).content
+        availability = (await self.bot.wait_for('message', check=check)).content
         await author.send("How to contact:")
-        contact = (await client.wait_for('message', check=check)).content
+        contact = (await self.bot.wait_for('message', check=check)).content
         await author.send("Job description:")
-        jobdesc = (await client.wait_for('message', check=check)).content
+        jobdesc = (await self.bot.wait_for('message', check=check)).content
         
         embed=discord.Embed(colour=discord.Colour.green())
         embed.add_field(name=job, value="\u200b")
