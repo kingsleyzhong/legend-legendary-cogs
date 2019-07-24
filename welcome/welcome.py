@@ -4,6 +4,7 @@ from redbot.core.utils.chat_formatting import pagify
 import clashroyale
 import brawlstats
 import asyncio
+from random import choice
 
 class Welcome(commands.Cog):
 
@@ -383,7 +384,7 @@ class Welcome(commands.Cog):
         repeat = True
         while repeat:
             repeat = False
-            text = "**CHOOSE ONE OF THE OPTIONS BELOW:**\n------------------------------------------------------\n<:ClashRoyale:595528714138288148> **Save Clash Royale account and join the server**\n------------------------------------------------------\n<:HelpIcon:598803665989402624> **Talk to support**\n------------------------------------------------------"
+            text = "**CHOOSE ONE OF THE OPTIONS BELOW:**\n-----------------------------------------------------------\n<:ClashRoyale:595528714138288148> **Save Clash Royale account and join the server**\n-----------------------------------------------------------\n<:HelpIcon:598803665989402624> **Talk to support**\n-----------------------------------------------------------"
             chooseGameMessage = await setupChannel.send(text)
             await chooseGameMessage.add_reaction("<:ClashRoyale:595528714138288148>")
             await chooseGameMessage.add_reaction("<:HelpIcon:598803665989402624>")
@@ -486,7 +487,7 @@ class Welcome(commands.Cog):
                                 except discord.Forbidden:
                                     await appendLog(f":exclamation:Couldn't change roles of this user. ({wins20Role.name})")
 
-                            await setupChannel.send("Your account has been saved!\n\n**WHAT TO DO NEXT?**\n\nINSERT SOME IMPORTANT CHANNELS HERE\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Fight Club*")
+                            await setupChannel.send(f"Your account has been saved!\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\nHead over to {globatChat.mention} to introduce yourself to our community!\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Fight Club*")
 
                         elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
                             await appendLog(f"User's account: No")
@@ -517,8 +518,9 @@ class Welcome(commands.Cog):
                 repeat = True
         
         if new:
-            await globalChat.send(f"<:LA:602901892141547540> {member.mention} welcome  to LA Gaming!")
+            wlcm = ["Are you ready to fight?", "Do you have what it takes to become a champion?", "Ready to showcase your skill?", "Are you ready to prove yourself?"]
+            await globalChat.send(f"<:lafclogo:603670041044582516> {member.mention} welcome to LA Fight Club!")
         await appendLog(f"**Finished**")
-        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="This channel will get deleted in 5 minutes!\n\nIf you have any questions or need help please send a personal message to <@590906101554348053>.".upper()))
+        await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="Process finished, this channel will get deleted in 5 minutes!"))
         await asyncio.sleep(300)
         await setupChannel.delete(reason="Welcoming process finished.")
