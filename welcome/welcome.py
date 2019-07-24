@@ -373,10 +373,10 @@ class Welcome(commands.Cog):
                 
         welcomeEmbed = discord.Embed(colour = discord.Colour.blue())
         welcomeEmbed.set_image(url="https://i.imgur.com/tG8Rio3.png")
-        welcomeEmbed2 = discord.Embed(colour = discord.Colour.blue(), description="Welcome to the LA Fight Club.\nWe are a gamer run community devoted to enhancing the player experience.\nLeaders of many clan families and esport organizations have come together to bring you this community.\n\nWe cater to players looking for a more competitive edge while keeping good sportsmanship.\nWe have frequent tournaments/events for cash prizes.")
+        welcomeEmbed2 = discord.Embed(colour = discord.Colour.blue())
         welcomeEmbed2.set_image(url="https://i.imgur.com/wiY1LP4.png")
         await setupChannel.send(member.mention, embed=welcomeEmbed)
-        await setupChannel.send(embed=welcomeEmbed2)
+        await setupChannel.send("Welcome to the LA Fight Club.\nWe are a gamer run community devoted to enhancing the player experience.\nLeaders of many clan families and esport organizations have come together to bring you this community.\n\nWe cater to players looking for a more competitive edge while keeping good sportsmanship.\nWe have frequent tournaments/events for cash prizes.", embed=welcomeEmbed2)
         await setupChannel.send("You can read about how we function at <#595045518594408461>\nPlease follow our discord and gaming rules which can be viewed in detail at <#593310003591381005>")
         await asyncio.sleep(2)
 
