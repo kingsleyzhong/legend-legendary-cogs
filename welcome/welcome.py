@@ -487,7 +487,7 @@ class Welcome(commands.Cog):
                                 except discord.Forbidden:
                                     await appendLog(f":exclamation:Couldn't change roles of this user. ({wins20Role.name})")
 
-                            await setupChannel.send(f"Your account has been saved!\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\nHead over to {globatChat.mention} to introduce yourself to our community!\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Fight Club*")
+                            await setupChannel.send(f"Your account has been saved!\n\nLet us know if you need anything by sending a personal message to <@590906101554348053>.\n\nHead over to {globalChat.mention} to introduce yourself to our community!\n\n**Thank you, and enjoy your stay!**\n*- Legendary Alliance Fight Club*")
 
                         elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
                             await appendLog(f"User's account: No")
