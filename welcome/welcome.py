@@ -425,7 +425,7 @@ class Welcome(commands.Cog):
                         playerEmbed.add_field(name="Role", value=f"<:social:451063078096994304>{player.role.capitalize()}")
                     else:
                         playerEmbed.add_field(name="Clan", value="None")
-                    playerEmbed.add_field(name=f"{acountConfirm} (Choose reaction)", value="<:yesconfirm:595535992329601034> Yes\t<:nocancel:595535992199315466> No", inline=False)
+                    playerEmbed.add_field(name=f"{accountConfirm} (Choose reaction)", value="<:yesconfirm:595535992329601034> Yes\t<:nocancel:595535992199315466> No", inline=False)
                     confirmMessage = await setupChannel.send(accountFound, embed=playerEmbed)
                     await confirmMessage.add_reaction("<:yesconfirm:595535992329601034>")
                     await confirmMessage.add_reaction("<:nocancel:595535992199315466>")
