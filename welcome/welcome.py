@@ -527,7 +527,7 @@ class Welcome(commands.Cog):
         
         if new:
             wlcm = ["Are you ready to fight?", "Do you have what it takes to become a champion?", "Ready to showcase your skill?", "Are you ready to prove yourself?"]
-            await globalChat.send(f"<:lafclogo:603670041044582516> {member.mention} welcome to LA Fight Club!")
+            await globalChat.send(f"<:lafclogo:603670041044582516> {member.mention} welcome to LA Fight Club! {choice(wlcm)}")
         await appendLog(f"**Finished**")
         await setupChannel.send(embed=discord.Embed(colour=discord.Colour.blue(), description="Process finished, this channel will get deleted in 5 minutes!"))
         await asyncio.sleep(300)
