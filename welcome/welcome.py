@@ -395,7 +395,7 @@ class Welcome(commands.Cog):
             if str(reaction.emoji) == "<:ClashRoyale:595528714138288148>":
                 await appendLog("Chosen game: Clash Royale")
                 
-                tag = await self.config.user(member).tag()
+                tag = await self.crconfig.user(member).tag()
                 accountConfirm = "Is this your account?"
                 accountFound = "**Clash Royale** account with this tag found:"
                 
