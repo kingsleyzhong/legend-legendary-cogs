@@ -17,11 +17,18 @@ class Welcome(commands.Cog):
     async def on_member_join(self, member):
         if member.guild.id == 440960893916807188 and not member.bot:
             await self.do_setup(member, new = True)
+        if member.guild.id == 593248015729295360 and not member.bot:
+            await self.do_setup_LAFC(member, new = True)
     
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         if member.guild.id == 440960893916807188 and not member.bot:
             welcomeCategory = discord.utils.get(member.guild.categories, id=598437481775497216)
+            for ch in welcomeCategory.channels:
+                if ch.topic == str(member.id):
+                    await ch.delete(reason="User left.")
+        if member.guild.id == 593248015729295360 and not member.bot:
+            welcomeCategory = discord.utils.get(member.guild.categories, id=602906519100719115)
             for ch in welcomeCategory.channels:
                 if ch.topic == str(member.id):
                     await ch.delete(reason="User left.")
