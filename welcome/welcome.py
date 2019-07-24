@@ -376,7 +376,7 @@ class Welcome(commands.Cog):
         welcomeEmbed2 = discord.Embed(colour = discord.Colour.blue())
         welcomeEmbed2.set_image(url="https://i.imgur.com/wiY1LP4.png")
         await setupChannel.send(member.mention, embed=welcomeEmbed)
-        await setupChannel.send("Welcome to the LA Fight Club.\nWe are a gamer run community devoted to enhancing the player experience.\nLeaders of many clan families and esport organizations have come together to bring you this community.\n\nWe cater to players looking for a more competitive edge while keeping good sportsmanship.\nWe have frequent tournaments/events for cash prizes.", embed=welcomeEmbed2)
+        await setupChannel.send("Welcome to the **LA Fight Club**.\n\nWe are a gamer run community devoted to enhancing the player experience.\nLeaders of many clan families and esport organizations have come together to bring you this community.\n\nWe cater to players looking for a more competitive edge while keeping good sportsmanship.\nWe have frequent tournaments/events for cash prizes.", embed=welcomeEmbed2)
         await setupChannel.send("You can read about how we function at <#595045518594408461>\nPlease follow our discord and gaming rules which can be viewed in detail at <#593310003591381005>")
         await asyncio.sleep(2)
 
@@ -394,16 +394,25 @@ class Welcome(commands.Cog):
             
             if str(reaction.emoji) == "<:ClashRoyale:595528714138288148>":
                 await appendLog("Chosen game: Clash Royale")
-                sendTagEmbed = discord.Embed(title="Please tell me your Clash Royale tag!", colour = discord.Colour.blue())
-                sendTagEmbed.set_image(url="https://i.imgur.com/Fc8uAWH.png")
-                await setupChannel.send(embed=sendTagEmbed)
-                def checkmsg(m):
-                    return m.channel == setupChannel and m.author == member
-                tagMessage = await self.bot.wait_for('message', check=checkmsg)
-                tag = tagMessage.content.lower().replace('O', '0').replace(' ', '')
-                if tag.startswith("#"):
-                    tag = tag.strip('#')
-                await appendLog(f"Tag input: {tag}")
+                
+                tag = await self.config.user(member).tag()
+                accountConfirm = "Is this your account?"
+                accountFound = "**Clash Royale** account with this tag found:"
+                
+                if tag is not None:
+                    accountConfirm = "Would you like to keep this account saved?"
+                    accountFound = "I found this CR account assigned to your Discord account in a database:"
+                else:
+                    sendTagEmbed = discord.Embed(title="Please tell me your Clash Royale tag!", colour = discord.Colour.blue())
+                    sendTagEmbed.set_image(url="https://i.imgur.com/Fc8uAWH.png")
+                    await setupChannel.send(embed=sendTagEmbed)
+                    def checkmsg(m):
+                        return m.channel == setupChannel and m.author == member
+                    tagMessage = await self.bot.wait_for('message', check=checkmsg)
+                    tag = tagMessage.content.lower().replace('O', '0').replace(' ', '')
+                    if tag.startswith("#"):
+                        tag = tag.strip('#')
+                    await appendLog(f"Tag input: {tag}")
                 
                 try:
                     player = await self.crapi.get_player("#" + tag)
@@ -416,8 +425,8 @@ class Welcome(commands.Cog):
                         playerEmbed.add_field(name="Role", value=f"<:social:451063078096994304>{player.role.capitalize()}")
                     else:
                         playerEmbed.add_field(name="Clan", value="None")
-                    playerEmbed.add_field(name="Is this your account? (Choose reaction)", value="<:yesconfirm:595535992329601034> Yes\t<:nocancel:595535992199315466> No", inline=False)
-                    confirmMessage = await setupChannel.send(f"**Clash Royale** account with tag **#{tag.upper()}** found:", embed=playerEmbed)
+                    playerEmbed.add_field(name=f"{acountConfirm} (Choose reaction)", value="<:yesconfirm:595535992329601034> Yes\t<:nocancel:595535992199315466> No", inline=False)
+                    confirmMessage = await setupChannel.send(accountFound, embed=playerEmbed)
                     await confirmMessage.add_reaction("<:yesconfirm:595535992329601034>")
                     await confirmMessage.add_reaction("<:nocancel:595535992199315466>")
 
