@@ -500,7 +500,7 @@ class Welcome(commands.Cog):
                     repeat = True
                     await setupChannel.send(f"Clash Royale API is offline, please try again later! ({str(e)})")
                     await appendLog(f":exclamation:Error occured: {str(e)}")
-                except Exception as e:
+                except ZeroDivisionError as e:
                     repeat = True
                     await setupChannel.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
                     await appendLog(f":exclamation:Error occured: {str(e)}")
