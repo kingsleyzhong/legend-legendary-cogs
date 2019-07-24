@@ -492,22 +492,22 @@ class Welcome(commands.Cog):
                             await appendLog(f"User's account: No")
                             repeatSave = True
                     
-                except clashroyale.NotFoundError as e:
-                    repeat = True
-                    await setupChannel.send("No player with this tag found, try again!")
-                    await appendLog(f":exclamation:Error occured: {str(e)}")
-                except ValueError as e:
-                    repeat = True
-                    await setupChannel.send(f"**{str(e)}\nTry again or send a personal message to <@590906101554348053>!**")
-                    await appendLog(f":exclamation:Error occured: {str(e)}")
-                except clashroyale.RequestError as e:
-                    repeat = True
-                    await setupChannel.send(f"Clash Royale API is offline, please try again later! ({str(e)})")
-                    await appendLog(f":exclamation:Error occured: {str(e)}")
-                except Exception as e:
-                    repeat = True
-                    await setupChannel.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
-                    await appendLog(f":exclamation:Error occured: {str(e)}")
+                    except clashroyale.NotFoundError as e:
+                        repeat = True
+                        await setupChannel.send("No player with this tag found, try again!")
+                        await appendLog(f":exclamation:Error occured: {str(e)}")
+                    except ValueError as e:
+                        repeat = True
+                        await setupChannel.send(f"**{str(e)}\nTry again or send a personal message to <@590906101554348053>!**")
+                        await appendLog(f":exclamation:Error occured: {str(e)}")
+                    except clashroyale.RequestError as e:
+                        repeat = True
+                        await setupChannel.send(f"Clash Royale API is offline, please try again later! ({str(e)})")
+                        await appendLog(f":exclamation:Error occured: {str(e)}")
+                    except Exception as e:
+                        repeat = True
+                        await setupChannel.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
+                        await appendLog(f":exclamation:Error occured: {str(e)}")
                     
             elif str(reaction.emoji) == "<:HelpIcon:598803665989402624>":
                 await appendLog("Chosen option: Talk to support")
