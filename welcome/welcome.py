@@ -490,6 +490,7 @@ class Welcome(commands.Cog):
 
                         elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
                             await appendLog(f"User's account: No")
+                            tag = None
                             repeatSave = True
                     
                     except clashroyale.NotFoundError as e:
