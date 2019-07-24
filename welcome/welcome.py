@@ -266,15 +266,17 @@ class Welcome(commands.Cog):
                                 return (user == member or user.id == 230947675837562880) and str(reaction.emoji) in ["<:yesconfirm:595535992329601034>", "<:nocancel:595535992199315466>"]
                             try:
                                 reaction, _ = await self.bot.wait_for('reaction_add', check=otcheck, timeout=600)
+                                
+                                if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
+                                    await appendLog("Save other game: Yes")
+                                    repeat = True
+                                    showBS = False
+                                elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
+                                    await appendLog("Save other game: No")
+                                    repeat = False
                             except asyncio.TimeoutError:
                                 repeat = False
-                            if str(reaction.emoji) == "<:yesconfirm:595535992329601034>":
-                                await appendLog("Save other game: Yes")
-                                repeat = True
-                                showBS = False
-                            elif str(reaction.emoji) == "<:nocancel:595535992199315466>":
-                                await appendLog("Save other game: No")
-                                repeat = False
+                            
                         else:
                             repeat = False
                         
@@ -370,12 +372,12 @@ class Welcome(commands.Cog):
                 count += 1
                 
         welcomeEmbed = discord.Embed(colour = discord.Colour.blue())
-        welcomeEmbed.set_image(url="https://i.imgur.com/wwhgP4f.png")
+        welcomeEmbed.set_image(url="https://i.imgur.com/tG8Rio3.png")
         welcomeEmbed2 = discord.Embed(colour = discord.Colour.blue())
-        welcomeEmbed2.set_image(url="https://i.imgur.com/LOLUk7Q.png")
+        welcomeEmbed2.set_image(url="https://i.imgur.com/wiY1LP4.png")
         await setupChannel.send(member.mention, embed=welcomeEmbed)
-        await setupChannel.send("We are a gamer run community devoted to enhancing the player experience. We offer comprehensive resources, guidance from veteran gamers, and involvement in a vibrant interactive online community that cater to both casual members and players looking for a more competitive edge. We have an eSports team and host frequent tournaments/events for cash prizes.", embed=welcomeEmbed2)
-        await setupChannel.send("You can read about our mission statement and how we function at #information.\nPlease follow our discord and gaming rules which can be viewed in detail at #rules.")
+        await setupChannel.send("Welcome to the LA Fight Club. We are a gamer run community devoted to enhancing the player experience. Leaders of many clan families and esport organizations have come together to bring you this community.\n\nWe cater to players looking for a more competitive edge while keeping good sportsmanship. We have frequent tournaments/events for cash prizes.", embed=welcomeEmbed2)
+        await setupChannel.send("You can read about how we function at <#595045518594408461>\nPlease follow our discord and gaming rules which can be viewed in detail at <#593310003591381005>")
         await asyncio.sleep(2)
 
         repeat = True
