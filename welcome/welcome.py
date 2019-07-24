@@ -508,6 +508,7 @@ class Welcome(commands.Cog):
                         await appendLog(f":exclamation:Error occured: {str(e)}")
                     except Exception as e:
                         repeat = True
+                        print(str(e))
                         await setupChannel.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
                         await appendLog(f":exclamation:Error occured: {str(e)}")
                     
