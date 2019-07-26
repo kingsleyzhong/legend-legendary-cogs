@@ -22,7 +22,6 @@ class Tools(commands.Cog):
             number = int(msg.content.split(" ")[0])
             history = await msg.channel.history(limit=2).flatten()
             numberPrev = int(history[1].content.split(" ")[0])
-            await msg.channel.send(f"prev:{numberPrev} now:{number}")
             if number != numberPrev + 1:
                 await msg.channel.send(f"Wrong number! (Hint: {numberPrev} + 1)", delete_after=3)
                 await msg.delete()
