@@ -18,7 +18,7 @@ class Tools(commands.Cog):
         
     @commands.Cog.listener()
     async def on_message(self, msg):
-        if msg.channel.id == 599320984675156020 and not msg.author.bot:
+        if msg.channel.id == 599320984675156020: #and not msg.author.bot:
             number = int(msg.content.split(" ")[0])
             history = await msg.channel.history(limit=2).flatten()
             numberPrev = int(history[1].content.split(" ")[0])
@@ -26,7 +26,7 @@ class Tools(commands.Cog):
             if number != numberPrev + 1:
                 await msg.channel.send(f"Wrong number! (Hint: {numberPrev} + 1)", delete_after=3)
                 await msg.delete()
-            if msg.author == history[1].author
+            if msg.author == history[1].author:
                 await msg.channel.send(f"Slow down! Let other people count as well!", delete_after=3)
                 await msg.delete()
                 
