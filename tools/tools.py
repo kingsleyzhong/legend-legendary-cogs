@@ -22,7 +22,7 @@ class Tools(commands.Cog):
             print(msg.content)
             number = int(msg.content.split(" ")[0])
             history = await msg.channel.history(limit=2).flatten()
-            numberPrev = int(history[1].content)
+            numberPrev = int(history[1].content.split(" ")[0])
             await msg.channel.send(f"prev:{numberPrev} now:{number}")
 
     def convertToLeft(self, sec):
