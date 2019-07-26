@@ -18,15 +18,12 @@ class Tools(commands.Cog):
         
     @commands.Cog.listener()
     async def on_message(self, msg):
-        print(msg.content)
-        if msg.channel.id == "599320984675156020":
-            try:
-                number = int(msg.content.split(" ")[0])
-                history = await msg.channel.history(limit=2).flatten()
-                numberPrev = int(history[1])
-                await msg.channel.send(f"prev:{numberPrev} now:{number}")
-            except Exception as e:
-                print(str(e) + "\n" + e)
+        if msg.channel.id == 599320984675156020:
+            print(msg.content)
+            number = int(msg.content.split(" ")[0])
+            history = await msg.channel.history(limit=2).flatten()
+            numberPrev = int(history[1])
+            await msg.channel.send(f"prev:{numberPrev} now:{number}")
 
     def convertToLeft(self, sec):
         if sec > 3600:
