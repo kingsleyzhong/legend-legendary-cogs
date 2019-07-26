@@ -19,11 +19,14 @@ class Tools(commands.Cog):
         
     @commands.Cog.listener()
     async def on_message(self, msg):
-        if msg.channel.id == 599320984675156020 and not msg.author.bot:
+        if msg.channel.id == 584099500612780053 and not msg.author.bot:
             try:
                 number = int(msg.content.split(" ")[0])
                 history = await msg.channel.history(limit=2).flatten()
-                numberPrev = int(history[1].content.split(" ")[0])
+                try:
+                    numberPrev = int(history[1].content.split(" ")[0])
+                except:
+                    numberPrev = int(history[2].content.split(" ")[0])
                 if number != numberPrev + 1:
                     wrongmsg = ["Wrong number!", "I know math is hard... Try using a calculator maybe?", "Improve your counting skils...", "Did you not go to school?", "Thats wrong...", "https://en.wikipedia.org/wiki/Counting", "Try again...", "Mirror, mirror on the wall, who’s the smartest of them all? NOT YOU!"]
                     await msg.channel.send(f"{choice(wrongmsg)} (Hint: {numberPrev} + 1)", delete_after=2)
