@@ -215,7 +215,7 @@ class ClashRoyaleCog(commands.Cog):
                     cemoji = discord.utils.get(self.bot.emojis, name = str(clans[i]['badgeId']))
                     key = ""
                     for k in (await self.config.guild(ctx.guild).clans()).keys():
-                        if clans[i]['tag'].replace("#", "") == await self.config.guild(ctx.guild).clans().get_raw(k, "tag"):
+                        if clans[i]['tag'].replace("#", "") == await self.config.guild(ctx.guild).clans.get_raw(k, "tag"):
                             key = k
                                 
                     self.saved_clans[family][key]['lastMemberCount'] = clans[i]['members']
