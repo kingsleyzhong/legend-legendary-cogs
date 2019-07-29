@@ -279,8 +279,10 @@ class ClashRoyaleCog(commands.Cog):
                 else:
                     page = page + 1
                 return await menu(ctx, pages, controls, message=message, page=page, timeout=timeout)                  
-                                
-            await menu(ctx, embedsToSend, {"➡": next_page} , timeout=300)
+            if len(embedsToSend) > 1:                   
+                await menu(ctx, embedsToSend, {"➡": next_page} , timeout=300)
+            else:
+                await ctx.send(embed=embedsToSend[0])
                                 
         except ZeroDivisionError as e:
             return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
