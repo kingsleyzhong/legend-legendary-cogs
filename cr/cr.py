@@ -1,5 +1,6 @@
 import discord
 from redbot.core import commands, Config, checks
+from redbot.core.utils.embed import randomize_colour
 import clashroyale
 
 class ClashRoyaleCog(commands.Cog):
@@ -193,7 +194,7 @@ class ClashRoyaleCog(commands.Cog):
                 embed.add_field(name="Average Donations Per Week", value= f"<:deck:451062749565550602> {str(clan['donationsPerWeek'])}")
                 return await ctx.send(embed=embed)            
                 
-            except ZeroDivisionError as e:
+            except Exception as e:
                 return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
                                 
         try:
@@ -205,8 +206,8 @@ class ClashRoyaleCog(commands.Cog):
             except clashroyale.RequestError as e:
                 offline = True
             
-            embed = discord.Embed(color = discord.Colour.blue())
-            embed.set_author(name=f"{ctx.guild.name} clans".upper(), icon_url=ctx.guild.icon_url)
+            embed = discord.Embed()
+            embed.set_author(name=f"{ctx.guild.name} clans", icon_url=ctx.guild.icon_url)
             
             if not offline:
                 clans = sorted(clans, key=lambda sort: (sort['requiredTrophies'], sort['clanScore']), reverse=True)
@@ -231,7 +232,7 @@ class ClashRoyaleCog(commands.Cog):
                     embed.add_field(name=e_name, value=e_value, inline=False)
                 
                 embed.set_footer(text = "Do you need more info about a clan? Use {}clan [key]".format(prefix))
-                await ctx.send(embed = embed)
+                await ctx.send(embed=randomize_colour(embed))
             
             else:
                 offclans = []
@@ -298,7 +299,7 @@ class ClashRoyaleCog(commands.Cog):
                 }
             key = key.lower()
             await self.config.guild(ctx.guild).clans.set_raw(key, value=result)
-            await ctx.send(embed = self.goodEmbed(f"{clan['name']} was successfully saved for this server!"))
+            await ctx.send(embed = self.goodEmbed(f"{clan['name']} was successfully saved in this server!"))
 
         except clashroyale.NotFoundError as e:
             await ctx.send(embed = self.badEmbed("No clan with this tag found, try again!"))
@@ -308,3 +309,22 @@ class ClashRoyaleCog(commands.Cog):
 
         except Exception as e:
             return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
+                                                  
+    @commands.guild_only()
+    @commands.has_permissions(administrator = True)
+    @clans.command(name="remove")
+    async def clans_remove(self, ctx, key : str):
+        """
+        Remove a clan from /clans command
+
+        key - key for the clan used in commands
+        """
+        await ctx.trigger_typing()
+        key = key.lower()
+        
+        try:
+            name = await self.config.guild(ctx.guild).clans.get_raw(key, "name")
+            await self.config.guild(ctx.guild).clans.clear_raw(key)
+            await ctx.send(embed = self.goodEmbed(f"{name} was successfully removed from this server!"))
+        except KeyError:
+            await ctx.send(embed = self.badEmbed(f"{key.title()} isn't saved clan!"))
