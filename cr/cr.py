@@ -217,13 +217,13 @@ class ClashRoyaleCog(commands.Cog):
                     for k in (await self.config.guild(ctx.guild).clans()).keys():
                         if clans[i]['tag'].replace("#", "") == await self.config.guild(ctx.guild).clans.get_raw(k, "tag"):
                             key = k
-                                
-                    self.saved_clans[family][key]['lastMemberCount'] = clans[i]['members']
-                    self.saved_clans[family][key]['lastRequirement'] = clans[i]['requiredTrophies']
-                    self.saved_clans[family][key]['lastScore'] = clans[i]['clanScore']
-                    self.saved_clans[family][key]['lastPosition'] = i
-                    self.saved_clans[family][key]['lastBadgeId'] = clans[i]['badgeId']
-                    self.saved_clans[family][key]['warTrophies'] = clans[i]['clanWarTrophies']
+                    
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastMemberCount', value=clans[i]['members'])            
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastRequirement', value=clans[i]['requiredTrophies'])   
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastScore', value=clans[i]['clanScore'])               
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastPosition', value=i)               
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastBadgeId', value=clans[i]['badgeId'])   
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'warTrophies', value=clans[i]['clanWarTrophies'])   
                    
                     e_name = f"{str(cemoji)} {clans[i]['name']} [{key}] ({clans[i]['tag']}) {self.saved_clans[family][key]['info']}"
                     e_value = f"<:people:449645181826760734>`{clans[i]['members']}` <:trophycr:587316903001718789>`{clans[i]['requiredTrophies']}+` <:crstar:449647025999314954>`{clans[i]['clanScore']}` <:cw_trophy:449640114423988234>`{clans[i]['clanWarTrophies']}`"
