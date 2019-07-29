@@ -266,9 +266,7 @@ class ClashRoyaleCog(commands.Cog):
                 for e in embedFields[i:i+8]:
                     embed.add_field(name=e[0], value=e[1], inline=False)
                 embedsToSend.append(embed)
-                                
-            controls = {"➡": next_page}                   
-                                
+             
             async def next_page(ctx: commands.Context, pages: list, controls: dict, message: discord.Message, page: int, timeout: float, emoji: str):
                 perms = message.channel.permissions_for(ctx.me)
                 if perms.manage_messages:
@@ -282,7 +280,7 @@ class ClashRoyaleCog(commands.Cog):
                     page = page + 1
                 return await menu(ctx, pages, controls, message=message, page=page, timeout=timeout)                  
                                 
-            await menu(ctx, embedsToSend, controls, timeout=300)
+            await menu(ctx, embedsToSend, {"➡": next_page} , timeout=300)
                                 
         except ZeroDivisionError as e:
             return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
