@@ -1,6 +1,7 @@
 import discord
 from redbot.core import commands, Config, checks
 from redbot.core.utils.embed import randomize_colour
+from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 import clashroyale
 
 class ClashRoyaleCog(commands.Cog):
@@ -189,7 +190,7 @@ class ClashRoyaleCog(commands.Cog):
                 embed.add_field(name="Required Trophies", value= f"<:trophycr:587316903001718789> {str(clan['requiredTrophies'])}")
                 embed.add_field(name="Score", value= f"<:crstar:449647025999314954> {str(clan['clanScore'])}")
                 embed.add_field(name="Clan War Trophies", value= f"<:cw_trophy:449640114423988234> {str(clan['clanWarTrophies'])}")
-                embed.add_field(name="Type", value= f"<:bslock:552560387279814690> {clan['type'].title()}")
+                embed.add_field(name="Type", value= f"<:bslock:552560387279814690> {clan['type'].title().replace("only", " Only")}")
                 embed.add_field(name="Location", value=f":earth_africa: {clan['location']['name']}")
                 embed.add_field(name="Average Donations Per Week", value= f"<:deck:451062749565550602> {str(clan['donationsPerWeek'])}")
                 return await ctx.send(embed=embed)            
@@ -209,8 +210,7 @@ class ClashRoyaleCog(commands.Cog):
             except clashroyale.RequestError as e:
                 offline = True
             
-            embed = discord.Embed()
-            embed.set_author(name=f"{ctx.guild.name} clans", icon_url=ctx.guild.icon_url)
+            embedFields = []
             
             if not offline:
                 clans = sorted(clans, key=lambda sort: (sort['requiredTrophies'], sort['clanScore']), reverse=True)
@@ -232,10 +232,7 @@ class ClashRoyaleCog(commands.Cog):
                     info = await self.config.guild(ctx.guild).clans.get_raw(key, "info", default="")
                     e_name = f"{str(cemoji)} {clans[i]['name']} [{key}] ({clans[i]['tag']}) {info}"
                     e_value = f"<:people:449645181826760734>`{clans[i]['members']}` <:trophycr:587316903001718789>`{clans[i]['requiredTrophies']}+` <:crstar:449647025999314954>`{clans[i]['clanScore']}` <:cw_trophy:449640114423988234>`{clans[i]['clanWarTrophies']}`"
-                    embed.add_field(name=e_name, value=e_value, inline=False)
-                
-                embed.set_footer(text = "Do you need more info about a clan? Use {}clan [key]".format(prefix))
-                await ctx.send(embed=randomize_colour(embed))
+                    embedFields.append([e_name, e_value])
             
             else:
                 offclans = []
@@ -256,10 +253,23 @@ class ClashRoyaleCog(commands.Cog):
                     
                     e_name = f"{cemoji} {cname} [{ckey}] (#{ctag}) {cinfo}"
                     e_value = f"<:people:449645181826760734>`{cmembers}` <:trophycr:587316903001718789>`{creq}+` <:crstar:449647025999314954>`{cscore}` <:cw_trophy:449640114423988234>`{ccw}`"
-                    embed.add_field(name=e_name, value=e_value, inline=False)
-                    embed.set_footer(text = "API is offline, showing last saved data.")
-                await ctx.send(embed = embed)
-
+                    embedFields.append([e_name, e_value])
+            
+            embedsToSend = []            
+            count = 5
+            for e in embedFields:
+                if count == 5:
+                    embed = discord.Embed()
+                    embed.set_author(name=f"{ctx.guild.name} clans", icon_url=ctx.guild.icon_url)
+                    footer = "API is offline, showing last saved data." if offline else f"Do you need more info about a clan? Use {ctx.prefix}clan [key]"
+                    embed.set_footer(text = footer)
+                embed.add_field(name=e[0], value=e[1], inline=False)
+                count -= 1
+                if count == 0:
+                    count = 5
+                    embedsToSend.append(randomize_colour(embed))
+            await menu(ctx, embedsToSend, DEFAULT_CONTROLS)
+                                
         except ZeroDivisionError as e:
             return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
                                 
