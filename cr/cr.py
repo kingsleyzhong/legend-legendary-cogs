@@ -156,7 +156,7 @@ class ClashRoyaleCog(commands.Cog):
             offline = True
             key = None
 
-        if key is not None:
+        if key is not None and key != "forceoffline":
             try:
                 if key.startswith("<"):
                     memberid = key.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
@@ -245,14 +245,14 @@ class ClashRoyaleCog(commands.Cog):
                                 
                 for clan in offclans:
                     ckey = clan[1]
-                    cscore = await self.config.guild(ctx.guild).clans.get_raw(key, "lastScore")
-                    cname = await self.config.guild(ctx.guild).clans.get_raw(key, "name")
-                    ctag = await self.config.guild(ctx.guild).clans.get_raw(key, "tag")
-                    cinfo = await self.config.guild(ctx.guild).clans.get_raw(key, "info")
-                    cmembers = await self.config.guild(ctx.guild).clans.get_raw(key, "lastMemberCount")
-                    creq = await self.config.guild(ctx.guild).clans.get_raw(key, "lastRequirement")
-                    ccw = await self.config.guild(ctx.guild).clans.get_raw(key, "warTrophies")        
-                    cemoji = discord.utils.get(self.bot.emojis, name = str(await self.config.guild(ctx.guild).clans.get_raw(key, "lastBadgeId")))
+                    cscore = await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastScore")
+                    cname = await self.config.guild(ctx.guild).clans.get_raw(ckey, "name")
+                    ctag = await self.config.guild(ctx.guild).clans.get_raw(ckey, "tag")
+                    cinfo = await self.config.guild(ctx.guild).clans.get_raw(ckey, "info")
+                    cmembers = await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastMemberCount")
+                    creq = await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastRequirement")
+                    ccw = await self.config.guild(ctx.guild).clans.get_raw(ckey, "warTrophies")        
+                    cemoji = discord.utils.get(self.bot.emojis, name = str(await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastBadgeId")))
                     
                     e_name = f"{cemoji} {cname} [{ckey}] (#{ctag}) {cinfo}"
                     e_value = f"<:people:449645181826760734>`{cmembers}` <:trophycr:587316903001718789>`{creq}+` <:crstar:449647025999314954>`{cscore}` <:cw_trophy:449640114423988234>`{ccw}`"
