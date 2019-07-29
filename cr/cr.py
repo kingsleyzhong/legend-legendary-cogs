@@ -263,6 +263,7 @@ class ClashRoyaleCog(commands.Cog):
                     footer = "API is offline, showing last saved data." if offline else f"Do you need more info about a clan? Use {ctx.prefix}clan [key]"
                     embed.set_footer(text = footer)
                     for e in chunk:
+                        await ctx.send(e)
                         embed.add_field(name=e[0], value=e[1], inline=False)
                     embedsToSend.append(randomize_colour(embed))
             await menu(ctx, embedsToSend, DEFAULT_CONTROLS, timeout=300)
