@@ -266,7 +266,23 @@ class ClashRoyaleCog(commands.Cog):
                 for e in embedFields[i:i+8]:
                     embed.add_field(name=e[0], value=e[1], inline=False)
                 embedsToSend.append(embed)
-            await menu(ctx, embedsToSend, DEFAULT_CONTROLS, timeout=300)
+                                
+            controls = {"➡": next_page}                   
+                                
+            async def next_page(ctx: commands.Context, pages: list, controls: dict, message: discord.Message, page: int, timeout: float, emoji: str):
+                perms = message.channel.permissions_for(ctx.me)
+                if perms.manage_messages:
+                    try:
+                        await message.remove_reaction(emoji, ctx.author)
+                    except discord.NotFound:
+                        pass
+                if page == len(pages) - 1:
+                    page = 0
+                else:
+                    page = page + 1
+                return await menu(ctx, pages, controls, message=message, page=page, timeout=timeout)                  
+                                
+            await menu(ctx, embedsToSend, controls, timeout=300)
                                 
         except Exception as e:
             return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
