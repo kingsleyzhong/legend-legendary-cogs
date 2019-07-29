@@ -171,11 +171,9 @@ class ClashRoyaleCog(commands.Cog):
                         except clashroyale.RequestError as e:
                             await ctx.send(embed = self.badEmbed(f"CR API is offline, please try again later! ({str(e)})"))
                 else:
-                    try:
-                        tag = await self.config.guild(ctx.guild).clans.get_raw(key.lower(), "tag", default=None)
+                    tag = await self.config.guild(ctx.guild).clans.get_raw(key.lower(), "tag", default=None)
                     if tag is None:
                         return await ctx.send(embed = self.badEmbed(f"{key.title()} isn't saved clan in this server!"
-
                 try:
                     clan = await self.crapi.get_clan(tag)
                     clan = clan.raw_data
