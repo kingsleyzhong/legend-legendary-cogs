@@ -284,7 +284,7 @@ class ClashRoyaleCog(commands.Cog):
             else:
                 await ctx.send(embed=embedsToSend[0])
                                 
-        except ZeroDivisionError as e:
+        except Exception as e:
             return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
                                 
                                 
@@ -329,7 +329,7 @@ class ClashRoyaleCog(commands.Cog):
             await ctx.send(embed = self.badEmbed(f"CR API is offline, please try again later! ({str(e)})"))
 
         except Exception as e:
-            return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
+            return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
                                                   
     @commands.guild_only()
     @commands.has_permissions(administrator = True)
