@@ -2,6 +2,7 @@ import discord
 from redbot.core import commands, Config, checks
 from redbot.core.utils.embed import randomize_colour
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from random import choice
 import clashroyale
 
 class ClashRoyaleCog(commands.Cog):
@@ -112,7 +113,7 @@ class ClashRoyaleCog(commands.Cog):
             return await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
 
 
-        embed=discord.Embed(color=discord.Colour.blue())
+        embed=discord.Embed()
         embed.set_author(name=f"{player.name} {player.tag}", icon_url="https://i.imgur.com/Qs0Ter9.png")
         embed.add_field(name="Trophies", value=f"<:trophycr:587316903001718789>{player.trophies}")
         embed.add_field(name="Highest Trophies", value=f"<:nicertrophy:587565339038973963>{player.bestTrophies}")
@@ -142,7 +143,7 @@ class ClashRoyaleCog(commands.Cog):
             i+=1
         embed.add_field(name="Upcoming Chests", value=chests_msg.split("X")[0], inline=False)
         embed.add_field(name="Rare Chests", value=chests_msg.split("X")[1], inline=False)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=randomize_colour(embed))
         
         
     @commands.guild_only()
@@ -185,7 +186,7 @@ class ClashRoyaleCog(commands.Cog):
                     return
                 
                 badge = discord.utils.get(self.bot.emojis, name = str(clan['badgeId']))
-                embed=discord.Embed(title=f"{badge}{clan['name']} ({clan['tag']})", description=f"```{clan['description']}```", color=0x891193)
+                embed=discord.Embed(title=f"{badge}{clan['name']} ({clan['tag']})", description=f"```{clan['description']}```")
                 embed.add_field(name="Members", value=f"<:people:449645181826760734> {clan['members']}/50")
                 embed.add_field(name="Required Trophies", value= f"<:trophycr:587316903001718789> {str(clan['requiredTrophies'])}")
                 embed.add_field(name="Score", value= f"<:crstar:449647025999314954> {str(clan['clanScore'])}")
@@ -193,7 +194,7 @@ class ClashRoyaleCog(commands.Cog):
                 embed.add_field(name="Type", value= f"<:bslock:552560387279814690> {clan['type'].title()}".replace("only", " Only"))
                 embed.add_field(name="Location", value=f":earth_africa: {clan['location']['name']}")
                 embed.add_field(name="Average Donations Per Week", value= f"<:deck:451062749565550602> {str(clan['donationsPerWeek'])}")
-                return await ctx.send(embed=embed)            
+                return await ctx.send(embed=randomize_colour(embed))            
                 
             except Exception as e:
                 return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
@@ -255,9 +256,10 @@ class ClashRoyaleCog(commands.Cog):
                     e_value = f"<:people:449645181826760734>`{cmembers}` <:trophycr:587316903001718789>`{creq}+` <:crstar:449647025999314954>`{cscore}` <:cw_trophy:449640114423988234>`{ccw}`"
                     embedFields.append([e_name, e_value])
             
+            colour = choice([discord.Colour.green(), discord.Colour.blue(), discord.Colour.purple(), discord.Colour.orange(), discord.Colour.red(), discord.Colour.teal()])
             embedsToSend = []                
             for i in range(0, len(embedFields), 8):
-                embed = discord.Embed()
+                embed = discord.Embed(colour=colour)
                 embed.set_author(name=f"{ctx.guild.name} clans", icon_url=ctx.guild.icon_url)
                 footer = "API is offline, showing last saved data." if offline else f"Do you need more info about a clan? Use {ctx.prefix}clan [key]"
                 embed.set_footer(text = footer)
