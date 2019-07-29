@@ -190,7 +190,7 @@ class ClashRoyaleCog(commands.Cog):
                 embed.add_field(name="Required Trophies", value= f"<:trophycr:587316903001718789> {str(clan['requiredTrophies'])}")
                 embed.add_field(name="Score", value= f"<:crstar:449647025999314954> {str(clan['clanScore'])}")
                 embed.add_field(name="Clan War Trophies", value= f"<:cw_trophy:449640114423988234> {str(clan['clanWarTrophies'])}")
-                embed.add_field(name="Type", value= f"<:bslock:552560387279814690> {clan['type'].title().replace("only", " Only")}")
+                embed.add_field(name="Type", value= f"<:bslock:552560387279814690> {clan['type'].replace("only", " Only").title()}")
                 embed.add_field(name="Location", value=f":earth_africa: {clan['location']['name']}")
                 embed.add_field(name="Average Donations Per Week", value= f"<:deck:451062749565550602> {str(clan['donationsPerWeek'])}")
                 return await ctx.send(embed=embed)            
