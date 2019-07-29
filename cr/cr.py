@@ -256,17 +256,17 @@ class ClashRoyaleCog(commands.Cog):
                     embedFields.append([e_name, e_value])
             
             embedsToSend = []                
-            for i in range(0, len(embedFields), 10):
+            for i in range(0, len(embedFields), 8):
                 embed = discord.Embed()
                 embed.set_author(name=f"{ctx.guild.name} clans", icon_url=ctx.guild.icon_url)
                 footer = "API is offline, showing last saved data." if offline else f"Do you need more info about a clan? Use {ctx.prefix}clan [key]"
                 embed.set_footer(text = footer)
-                for e in embedFields[i:i+10]:
+                for e in embedFields[i:i+8]:
                     embed.add_field(name=e[0], value=e[1], inline=False)
                 embedsToSend.append(randomize_colour(embed))
             await menu(ctx, embedsToSend, DEFAULT_CONTROLS, timeout=300)
                                 
-        except ZeroDivisionError as e:
+        except Exception as e:
             return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
                                 
                                 
@@ -331,3 +331,15 @@ class ClashRoyaleCog(commands.Cog):
             await ctx.send(embed = self.goodEmbed(f"{name} was successfully removed from this server!"))
         except KeyError:
             await ctx.send(embed = self.badEmbed(f"{key.title()} isn't saved clan!"))
+
+    @commands.guild_only()
+    @commands.has_permissions(administrator = True)
+    @clans.command(name="info")
+    async def clans_info(self, ctx, key : str, *, info : str = ""):
+        """Edit clan info"""
+        await ctx.trigger_typing()
+        try:
+            await self.config.guild(ctx.guild).clans.set_raw(key, "info", value=info)
+            await ctx.send(embed = self.goodEmbed("Clan info successfully edited!"))
+        except KeyError:
+            await ctx.send(embed = self.badEmbed(f"{key.title()} isn't saved clan in this server!"))
