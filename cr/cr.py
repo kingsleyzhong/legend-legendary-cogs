@@ -7,7 +7,7 @@ class ClashRoyaleCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=2512325)
-        default_user = {"tag" : None}
+        default_user = {"tag" : None, "nick" : None}
         self.config.register_user(**default_user)
         default_guild = {"clans" : {}}
         self.config.register_guild(**default_guild)
@@ -41,6 +41,7 @@ class ClashRoyaleCog(commands.Cog):
         try:
             player = await self.crapi.get_player("#" + tag)
             await self.config.user(member).tag.set(tag)
+            await self.config.user(member).nick.set(player.name)
             await ctx.send(embed = self.goodEmbed("CR account {} was saved to {}".format(player.name, member.name)))
             
         except clashroyale.NotFoundError as e:
@@ -145,7 +146,7 @@ class ClashRoyaleCog(commands.Cog):
     @commands.guild_only()
     @commands.group(aliases=['clan'], invoke_without_command=True)
     async def clans(self, ctx, key:str=None):
-        """View all family clans"""
+        """View all clans saved in this server"""
         offline = False
         prefix = ctx.prefix
         await ctx.trigger_typing()
@@ -171,11 +172,10 @@ class ClashRoyaleCog(commands.Cog):
                             await ctx.send(embed = self.badEmbed(f"CR API is offline, please try again later! ({str(e)})"))
                 else:
                     try:
-                        tag = self.saved_clans[family][key.lower()]['tag']
-                    except KeyError:
-                        await ctx.send(embed = self.badEmbed("{} isn't saved clan in {} family!".format(key.title(), family.title())))
-                        return
-                
+                        tag = await self.config.guild(ctx.guild).clans.get_raw(key.lower(), "tag", default=None)
+                    if tag is None:
+                        return await ctx.send(embed = self.badEmbed(f"{key.title()} isn't saved clan in this server!"
+
                 try:
                     clan = await self.crapi.get_clan(tag)
                     clan = clan.raw_data
@@ -195,57 +195,44 @@ class ClashRoyaleCog(commands.Cog):
                 embed.add_field(name="Average Donations Per Week", value= f"<:deck:451062749565550602> {str(clan['donationsPerWeek'])}")
                 return await ctx.send(embed=embed)            
                 
-            except ZeroDivisionError as e:
-                await ctx.send(embed = self.badEmbed("Something went wrong, this is unusual and shouldn't happen. Please message the bot to report this error."))
-
-
+            except Exception as e:
+                return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
+                                
         try:
             try:
                 clans = []
-                for key in self.saved_clans[family].keys():
-                    clan = await self.crapi.get_clan(self.saved_clans[family][key]['tag'])
-                    clans.append(clan.raw_data)         
+                for key in (await self.config.guild(ctx.guild).clans()).keys():
+                    clan = await self.crapi.get_clan(await self.config.guild(ctx.guild).clans.get_raw(key, "tag"))
+                    clans.append(clan.raw_data)
             except clashroyale.RequestError as e:
                 offline = True
             
-            embed=discord.Embed(color = 0x891193)
-            embed.set_author(name=f"{family} Family Clans".upper(), icon_url=ctx.guild.icon_url)
+            embed = discord.Embed(color = discord.Colour.blue())
+            embed.set_author(name=f"{ctx.guild.name} clans".upper(), icon_url=ctx.guild.icon_url)
             
             if not offline:
                 clans = sorted(clans, key=lambda sort: (sort['requiredTrophies'], sort['clanScore']), reverse=True)
                 
                 for i in range(len(clans)):   
-                    cname = clans[i]['name']
-                    cmembers = clans[i]['members']
-                    cscore = clans[i]['clanScore']
-                    ctag = clans[i]['tag']
-                    creq = clans[i]['requiredTrophies']
-                    key = ""
-                    badgeid = clans[i]['badgeId']
-                    cemoji = discord.utils.get(self.bot.emojis, name = str(badgeid))
-                    cwtrophy = clans[i]['clanWarTrophies']
-                        
-                    for ckey in self.saved_clans[family].keys():
-                        if ctag.replace("#", "") == self.saved_clans[family][ckey]['tag']:
-                            key = ckey
+                    cemoji = discord.utils.get(self.bot.emojis, name = str(clans[i]['badgeId']))
+                    for k in (await self.config.guild(ctx.guild).clans()).keys():
+                        if ctag.replace("#", "") == await self.config.guild(ctx.guild).clans().get_raw(k, "tag"):
+                            key = k
                     
-                    self.saved_clans[family][key]['lastMemberCount'] = cmembers
-                    self.saved_clans[family][key]['lastRequirement'] = creq
-                    self.saved_clans[family][key]['lastScore'] = cscore
+                    self.saved_clans[family][key]['lastMemberCount'] = clans[i]['members']
+                    self.saved_clans[family][key]['lastRequirement'] = clans[i]['requiredTrophies']
+                    self.saved_clans[family][key]['lastScore'] = clans[i]['clanScore']
                     self.saved_clans[family][key]['lastPosition'] = i
-                    self.saved_clans[family][key]['lastBadgeId'] = badgeid
-                    self.saved_clans[family][key]['warTrophies'] = cwtrophy
-                    
-                    
-                    cinfo = self.saved_clans[family][key]['info']
+                    self.saved_clans[family][key]['lastBadgeId'] = clans[i]['badgeId']
+                    self.saved_clans[family][key]['warTrophies'] = clans[i]['clanWarTrophies']
+                   
                         
-                    e_name = f"{str(cemoji)} {cname} [{key}] ({ctag}) {cinfo}"
-                    e_value = f"<:people:449645181826760734>`{cmembers}` <:trophycr:587316903001718789>`{creq}+` <:crstar:449647025999314954>`{cscore}` <:cw_trophy:449640114423988234>`{cwtrophy}`"
+                    e_name = f"{str(cemoji)} {clans[i]['name']} [{key}] ({clans[i]['tag']}) {self.saved_clans[family][key]['info']}"
+                    e_value = f"<:people:449645181826760734>`{clans[i]['members']}` <:trophycr:587316903001718789>`{clans[i]['requiredTrophies']}+` <:crstar:449647025999314954>`{clans[i]['clanScore']}` <:cw_trophy:449640114423988234>`{clans[i]['clanWarTrophies']}`"
                     embed.add_field(name=e_name, value=e_value, inline=False)
                 
                 embed.set_footer(text = "Do you need more info about a clan? Use {}clan [key]".format(prefix))
                 await ctx.send(embed = embed)
-                self.save_clans()
             
             else:
                 offclans = []
@@ -277,8 +264,7 @@ class ClashRoyaleCog(commands.Cog):
             await ctx.send(embed = self.badEmbed("No clans to show yet, atleast 2 must be added! Add them using {}clans add!".format(prefix)))
 
         except Exception as e:
-            await ctx.send(embed = self.badEmbed("Something went wrong, this is unusual and shouldn't happen. Please message the bot to report this error."))
-            print(e)
+            return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
                                 
                                 
     @commands.guild_only()
@@ -322,4 +308,4 @@ class ClashRoyaleCog(commands.Cog):
             await ctx.send(embed = self.badEmbed(f"CR API is offline, please try again later! ({str(e)})"))
 
         except Exception as e:
-            return await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
+            return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
