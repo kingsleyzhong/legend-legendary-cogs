@@ -285,7 +285,7 @@ class ClashRoyaleCog(commands.Cog):
             await menu(ctx, embedsToSend, controls, timeout=300)
                                 
         except Exception as e:
-            return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
+            return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
                                 
                                 
     @commands.guild_only()
