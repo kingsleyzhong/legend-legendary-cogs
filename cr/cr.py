@@ -9,6 +9,8 @@ class ClashRoyaleCog(commands.Cog):
         self.config = Config.get_conf(self, identifier=2512325)
         default_user = {"tag" : None}
         self.config.register_user(**default_user)
+        default_guild = {"clans" : {}}
+        self.config.register_guild(**default_guild)
         
     async def initialize(self):
         apikey = await self.bot.db.api_tokens.get_raw("crapi", default={"api_key": None})
@@ -138,3 +140,186 @@ class ClashRoyaleCog(commands.Cog):
         embed.add_field(name="Upcoming Chests", value=chests_msg.split("X")[0], inline=False)
         embed.add_field(name="Rare Chests", value=chests_msg.split("X")[1], inline=False)
         await ctx.send(embed=embed)
+        
+        
+    @commands.guild_only()
+    @commands.group(aliases=['clan'], invoke_without_command=True)
+    async def clans(self, ctx, key:str=None):
+        """View all family clans"""
+        offline = False
+        prefix = ctx.prefix
+        await ctx.trigger_typing()
+
+        if key == "forceoffline":
+            offline = True
+            key = None
+
+        if key is not None:
+            try:
+                if key.startswith("<"):
+                    memberid = key.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
+                    member = discord.utils.get(ctx.guild.members, id=int(memberid))
+                    if member is not None:
+                        mtag = await self.config.user(member).tag()
+                        if mtag is None:
+                            return await ctx.send(embed = self.badEmbed(f"This user has no tag saved! Use {prefix}save <tag>"))
+
+                        try:
+                            player = await self.crapi.get_player(mtag)
+                            tag = player.clan.tag
+                        except clashroyale.RequestError as e:
+                            await ctx.send(embed = self.badEmbed(f"CR API is offline, please try again later! ({str(e)})"))
+                else:
+                    try:
+                        tag = self.saved_clans[family][key.lower()]['tag']
+                    except KeyError:
+                        await ctx.send(embed = self.badEmbed("{} isn't saved clan in {} family!".format(key.title(), family.title())))
+                        return
+                
+                try:
+                    clan = await self.crapi.get_clan(tag)
+                    clan = clan.raw_data
+                
+                except clashroyale.RequestError as e:
+                    await ctx.send(embed = self.badEmbed(f"CR API is offline, please try again later! ({str(e)})"))
+                    return
+                
+                badge = discord.utils.get(self.bot.emojis, name = str(clan['badgeId']))
+                embed=discord.Embed(title=f"{badge}{clan['name']} ({clan['tag']})", description=f"```{clan['description']}```", color=0x891193)
+                embed.add_field(name="Members", value=f"<:people:449645181826760734> {clan['members']}/50")
+                embed.add_field(name="Required Trophies", value= f"<:trophycr:587316903001718789> {str(clan['requiredTrophies'])}")
+                embed.add_field(name="Score", value= f"<:crstar:449647025999314954> {str(clan['clanScore'])}")
+                embed.add_field(name="Clan War Trophies", value= f"<:cw_trophy:449640114423988234> {str(clan['clanWarTrophies'])}")
+                embed.add_field(name="Type", value= f"<:bslock:552560387279814690> {clan['type'].title()}")
+                embed.add_field(name="Location", value=f":earth_africa: {clan['location']['name']}")
+                embed.add_field(name="Average Donations Per Week", value= f"<:deck:451062749565550602> {str(clan['donationsPerWeek'])}")
+                return await ctx.send(embed=embed)            
+                
+            except ZeroDivisionError as e:
+                await ctx.send(embed = self.badEmbed("Something went wrong, this is unusual and shouldn't happen. Please message the bot to report this error."))
+
+
+        try:
+            try:
+                clans = []
+                for key in self.saved_clans[family].keys():
+                    clan = await self.crapi.get_clan(self.saved_clans[family][key]['tag'])
+                    clans.append(clan.raw_data)         
+            except clashroyale.RequestError as e:
+                offline = True
+            
+            embed=discord.Embed(color = 0x891193)
+            embed.set_author(name=f"{family} Family Clans".upper(), icon_url=ctx.guild.icon_url)
+            
+            if not offline:
+                clans = sorted(clans, key=lambda sort: (sort['requiredTrophies'], sort['clanScore']), reverse=True)
+                
+                for i in range(len(clans)):   
+                    cname = clans[i]['name']
+                    cmembers = clans[i]['members']
+                    cscore = clans[i]['clanScore']
+                    ctag = clans[i]['tag']
+                    creq = clans[i]['requiredTrophies']
+                    key = ""
+                    badgeid = clans[i]['badgeId']
+                    cemoji = discord.utils.get(self.bot.emojis, name = str(badgeid))
+                    cwtrophy = clans[i]['clanWarTrophies']
+                        
+                    for ckey in self.saved_clans[family].keys():
+                        if ctag.replace("#", "") == self.saved_clans[family][ckey]['tag']:
+                            key = ckey
+                    
+                    self.saved_clans[family][key]['lastMemberCount'] = cmembers
+                    self.saved_clans[family][key]['lastRequirement'] = creq
+                    self.saved_clans[family][key]['lastScore'] = cscore
+                    self.saved_clans[family][key]['lastPosition'] = i
+                    self.saved_clans[family][key]['lastBadgeId'] = badgeid
+                    self.saved_clans[family][key]['warTrophies'] = cwtrophy
+                    
+                    
+                    cinfo = self.saved_clans[family][key]['info']
+                        
+                    e_name = f"{str(cemoji)} {cname} [{key}] ({ctag}) {cinfo}"
+                    e_value = f"<:people:449645181826760734>`{cmembers}` <:trophycr:587316903001718789>`{creq}+` <:crstar:449647025999314954>`{cscore}` <:cw_trophy:449640114423988234>`{cwtrophy}`"
+                    embed.add_field(name=e_name, value=e_value, inline=False)
+                
+                embed.set_footer(text = "Do you need more info about a clan? Use {}clan [key]".format(prefix))
+                await ctx.send(embed = embed)
+                self.save_clans()
+            
+            else:
+                offclans = []
+                for ckey in self.saved_clans[family].keys():
+                    offclans.append([self.saved_clans[family][ckey]['lastPosition'], self.saved_clans[family][ckey]['name'], self.saved_clans[family][ckey]['tag'], self.saved_clans[family][ckey]['info'], self.saved_clans[family][ckey]['lastMemberCount'], self.saved_clans[family][ckey]['lastRequirement'], self.saved_clans[family][ckey]['lastScore'], self.saved_clans[family][ckey]['warTrophies'], self.saved_clans[family][ckey]['lastBadgeId'], ckey])
+                    
+                offclans = sorted(offclans, key=lambda x: x[0])
+                
+                for clan in offclans:
+                    cname = clan[1]
+                    ctag = clan[2]
+                    cinfo = clan[3]
+                    cmembers = clan[4]
+                    creq = clan[5]
+                    cscore = clan[6]
+                    ccw = clan[7] 
+                    cbadgeid = clan[8]
+                    ckey = clan[9]
+                    
+                    cemoji = discord.utils.get(self.bot.emojis, name = str(cbadgeid))
+                    
+                    e_name = f"{cemoji} {cname} [{ckey}] (#{ctag}) {cinfo}"
+                    e_value = f"<:people:449645181826760734>`{cmembers}` <:trophycr:587316903001718789>`{creq}+` <:crstar:449647025999314954>`{cscore}` <:cw_trophy:449640114423988234>`{ccw}`"
+                    embed.add_field(name=e_name, value=e_value, inline=False)
+                    embed.set_footer(text = "API is offline, showing last saved data.")
+                await ctx.send(embed = embed)
+        
+        except TypeError as e:
+            await ctx.send(embed = self.badEmbed("No clans to show yet, atleast 2 must be added! Add them using {}clans add!".format(prefix)))
+
+        except Exception as e:
+            await ctx.send(embed = self.badEmbed("Something went wrong, this is unusual and shouldn't happen. Please message the bot to report this error."))
+            print(e)
+                                
+                                
+    @commands.guild_only()
+    @commands.has_permissions(administrator = True) 
+    @clans.command(name="add")
+    async def clans_add(self, ctx, key : str, tag : str):
+        """
+        Add a clan to /clans command
+
+        key - key for the clan to be used in other commands
+        tag - in-game tag of the clan
+        """
+        await ctx.trigger_typing()
+        if tag.startswith("#"):
+            tag = tag.strip('#').upper().replace('O', '0')
+        
+        if key in (await self.config.guild(ctx.guild).clans()).keys():
+            return await ctx.send(embed = self.badEmbed("This clan is already saved!"))
+
+        try:
+            clan = await self.crapi.get_clan(tag)
+            clan = clan.raw_data
+            result = {
+                "name" : clan['name'],
+                "nick" : key.title(),
+                "tag" : clan['tag'].replace("#", ""),
+                "lastMemberCount" : clan['members'],
+                "lastRequirement" : clan['requiredTrophies'],
+                "lastScore" : clan['clanScore'],
+                "info" : "",
+                "warTrophies" : clan['clanWarTrophies']
+                }
+            key = key.lower()
+            await self.config.guild(ctx.guild).clans.set_raw(key, value=result)
+            await ctx.send(embed = self.goodEmbed(f"{clan['name']} was successfully saved for this server!"))
+
+        except clashroyale.NotFoundError as e:
+            await ctx.send(embed = self.badEmbed("No clan with this tag found, try again!"))
+
+        except clashroyale.RequestError as e:
+            await ctx.send(embed = self.badEmbed(f"CR API is offline, please try again later! ({str(e)})"))
+
+        except Exception as e:
+            return await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
