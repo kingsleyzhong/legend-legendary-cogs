@@ -240,7 +240,7 @@ class ClashRoyaleCog(commands.Cog):
             else:
                 offclans = []
                 for k in (await self.config.guild(ctx.guild).clans()).keys():
-                    offclans.append(await self.config.guild(ctx.guild).clans.get_raw(k, "lastPosition"), k)
+                    offclans.append([await self.config.guild(ctx.guild).clans.get_raw(k, "lastPosition"), k])
                 offclans = sorted(offclans, key=lambda x: x[0])
                                 
                 for clan in offclans:
