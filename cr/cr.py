@@ -213,10 +213,11 @@ class ClashRoyaleCog(commands.Cog):
                 
                 for i in range(len(clans)):   
                     cemoji = discord.utils.get(self.bot.emojis, name = str(clans[i]['badgeId']))
+                    key = ""
                     for k in (await self.config.guild(ctx.guild).clans()).keys():
-                        if ctag.replace("#", "") == await self.config.guild(ctx.guild).clans().get_raw(k, "tag"):
+                        if clans[i]['tag'].replace("#", "") == await self.config.guild(ctx.guild).clans().get_raw(k, "tag"):
                             key = k
-                    
+                                
                     self.saved_clans[family][key]['lastMemberCount'] = clans[i]['members']
                     self.saved_clans[family][key]['lastRequirement'] = clans[i]['requiredTrophies']
                     self.saved_clans[family][key]['lastScore'] = clans[i]['clanScore']
@@ -224,7 +225,6 @@ class ClashRoyaleCog(commands.Cog):
                     self.saved_clans[family][key]['lastBadgeId'] = clans[i]['badgeId']
                     self.saved_clans[family][key]['warTrophies'] = clans[i]['clanWarTrophies']
                    
-                        
                     e_name = f"{str(cemoji)} {clans[i]['name']} [{key}] ({clans[i]['tag']}) {self.saved_clans[family][key]['info']}"
                     e_value = f"<:people:449645181826760734>`{clans[i]['members']}` <:trophycr:587316903001718789>`{clans[i]['requiredTrophies']}+` <:crstar:449647025999314954>`{clans[i]['clanScore']}` <:cw_trophy:449640114423988234>`{clans[i]['clanWarTrophies']}`"
                     embed.add_field(name=e_name, value=e_value, inline=False)
