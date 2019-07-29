@@ -225,7 +225,8 @@ class ClashRoyaleCog(commands.Cog):
                     await self.config.guild(ctx.guild).clans.set_raw(key, 'lastBadgeId', value=clans[i]['badgeId'])   
                     await self.config.guild(ctx.guild).clans.set_raw(key, 'warTrophies', value=clans[i]['clanWarTrophies'])   
                    
-                    e_name = f"{str(cemoji)} {clans[i]['name']} [{key}] ({clans[i]['tag']}) {self.saved_clans[family][key]['info']}"
+                    info = await self.config.guild(ctx.guild).clans.get_raw(key, "info", default="")
+                    e_name = f"{str(cemoji)} {clans[i]['name']} [{key}] ({clans[i]['tag']}) {info}"
                     e_value = f"<:people:449645181826760734>`{clans[i]['members']}` <:trophycr:587316903001718789>`{clans[i]['requiredTrophies']}+` <:crstar:449647025999314954>`{clans[i]['clanScore']}` <:cw_trophy:449640114423988234>`{clans[i]['clanWarTrophies']}`"
                     embed.add_field(name=e_name, value=e_value, inline=False)
                 
