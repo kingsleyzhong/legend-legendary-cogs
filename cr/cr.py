@@ -265,7 +265,7 @@ class ClashRoyaleCog(commands.Cog):
                 embed.set_footer(text = footer)
                 for e in embedFields[i:i+8]:
                     embed.add_field(name=e[0], value=e[1], inline=False)
-                embedsToSend.append(randomize_colour(embed))
+                embedsToSend.append(embed)
             await menu(ctx, embedsToSend, DEFAULT_CONTROLS, timeout=300)
                                 
         except Exception as e:
