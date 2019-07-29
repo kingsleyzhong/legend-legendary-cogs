@@ -196,6 +196,9 @@ class ClashRoyaleCog(commands.Cog):
                 
             except Exception as e:
                 return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
+        
+        if len((await self.config.guild(ctx.guild).clans()).keys()) < 1:
+            return await ctx.send(embed = self.badEmbed(f"This server has no clans saved. Save a clan by using {ctx.prefix}clans add!"))
                                 
         try:
             try:
@@ -236,32 +239,26 @@ class ClashRoyaleCog(commands.Cog):
             
             else:
                 offclans = []
-                for ckey in self.saved_clans[family].keys():
-                    offclans.append([self.saved_clans[family][ckey]['lastPosition'], self.saved_clans[family][ckey]['name'], self.saved_clans[family][ckey]['tag'], self.saved_clans[family][ckey]['info'], self.saved_clans[family][ckey]['lastMemberCount'], self.saved_clans[family][ckey]['lastRequirement'], self.saved_clans[family][ckey]['lastScore'], self.saved_clans[family][ckey]['warTrophies'], self.saved_clans[family][ckey]['lastBadgeId'], ckey])
-                    
+                for k in (await self.config.guild(ctx.guild).clans()).keys():
+                    offclans.append(await self.config.guild(ctx.guild).clans.get_raw(k, "lastPosition"), k)
                 offclans = sorted(offclans, key=lambda x: x[0])
-                
+                                
                 for clan in offclans:
-                    cname = clan[1]
-                    ctag = clan[2]
-                    cinfo = clan[3]
-                    cmembers = clan[4]
-                    creq = clan[5]
-                    cscore = clan[6]
-                    ccw = clan[7] 
-                    cbadgeid = clan[8]
-                    ckey = clan[9]
-                    
-                    cemoji = discord.utils.get(self.bot.emojis, name = str(cbadgeid))
+                    cscore = clan[0]
+                    ckey = clan[1]
+                    cname = await self.config.guild(ctx.guild).clans.get_raw(key, "name")
+                    ctag = await self.config.guild(ctx.guild).clans.get_raw(key, "tag")
+                    cinfo = await self.config.guild(ctx.guild).clans.get_raw(key, "info")
+                    cmembers = await self.config.guild(ctx.guild).clans.get_raw(key, "lastMemberCount")
+                    creq = await self.config.guild(ctx.guild).clans.get_raw(key, "lastRequirement")
+                    ccw = await self.config.guild(ctx.guild).clans.get_raw(key, "warTrophies")        
+                    cemoji = discord.utils.get(self.bot.emojis, name = str(await self.config.guild(ctx.guild).clans.get_raw(key, "lastBadgeId")))
                     
                     e_name = f"{cemoji} {cname} [{ckey}] (#{ctag}) {cinfo}"
                     e_value = f"<:people:449645181826760734>`{cmembers}` <:trophycr:587316903001718789>`{creq}+` <:crstar:449647025999314954>`{cscore}` <:cw_trophy:449640114423988234>`{ccw}`"
                     embed.add_field(name=e_name, value=e_value, inline=False)
                     embed.set_footer(text = "API is offline, showing last saved data.")
                 await ctx.send(embed = embed)
-        
-        except TypeError as e:
-            await ctx.send(embed = self.badEmbed("No clans to show yet, atleast 2 must be added! Add them using {}clans add!".format(prefix)))
 
         except ZeroDivisionError as e:
             return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
