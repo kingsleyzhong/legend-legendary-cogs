@@ -244,8 +244,8 @@ class ClashRoyaleCog(commands.Cog):
                 offclans = sorted(offclans, key=lambda x: x[0])
                                 
                 for clan in offclans:
-                    cscore = clan[0]
                     ckey = clan[1]
+                    cscore = await self.config.guild(ctx.guild).clans.get_raw(key, "lastScore")
                     cname = await self.config.guild(ctx.guild).clans.get_raw(key, "name")
                     ctag = await self.config.guild(ctx.guild).clans.get_raw(key, "tag")
                     cinfo = await self.config.guild(ctx.guild).clans.get_raw(key, "info")
