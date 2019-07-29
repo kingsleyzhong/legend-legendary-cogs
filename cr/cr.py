@@ -51,7 +51,7 @@ class ClashRoyaleCog(commands.Cog):
             await ctx.send(embed = self.badEmbed(f"CR API is offline, please try again later! ({str(e)})"))
         
         except Exception as e:
-            await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
+            await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
 
     @commands.command(aliases=['p'])
     async def profile(self, ctx, member=None):
@@ -193,8 +193,8 @@ class ClashRoyaleCog(commands.Cog):
                 embed.add_field(name="Average Donations Per Week", value= f"<:deck:451062749565550602> {str(clan['donationsPerWeek'])}")
                 return await ctx.send(embed=embed)            
                 
-            except Exception as e:
-                return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
+            except ZeroDivisionError as e:
+                return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
                                 
         try:
             try:
@@ -261,7 +261,7 @@ class ClashRoyaleCog(commands.Cog):
         except TypeError as e:
             await ctx.send(embed = self.badEmbed("No clans to show yet, atleast 2 must be added! Add them using {}clans add!".format(prefix)))
 
-        except Exception as e:
+        except ZeroDivisionError as e:
             return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
                                 
                                 
