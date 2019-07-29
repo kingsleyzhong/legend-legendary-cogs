@@ -255,20 +255,17 @@ class ClashRoyaleCog(commands.Cog):
                     e_value = f"<:people:449645181826760734>`{cmembers}` <:trophycr:587316903001718789>`{creq}+` <:crstar:449647025999314954>`{cscore}` <:cw_trophy:449640114423988234>`{ccw}`"
                     embedFields.append([e_name, e_value])
             
-            embedsToSend = []            
-            count = 5
-            for e in embedFields:
-                if count == 5:
+            embedsToSend = []                
+            for i in range(0, len(embedFields), 10):
+                for chunk in embedFields[i:i+10]:
                     embed = discord.Embed()
                     embed.set_author(name=f"{ctx.guild.name} clans", icon_url=ctx.guild.icon_url)
                     footer = "API is offline, showing last saved data." if offline else f"Do you need more info about a clan? Use {ctx.prefix}clan [key]"
                     embed.set_footer(text = footer)
-                embed.add_field(name=e[0], value=e[1], inline=False)
-                count -= 1
-                if count == 0:
-                    count = 5
+                    for e in chunk:
+                        embed.add_field(name=e[0], value=e[1], inline=False)
                     embedsToSend.append(randomize_colour(embed))
-            await menu(ctx, embedsToSend, DEFAULT_CONTROLS)
+            await menu(ctx, embedsToSend, DEFAULT_CONTROLS, timeout=300)
                                 
         except ZeroDivisionError as e:
             return await ctx.send("**Something went wrong, please send a personal message to **LA Modmail** bot or try again!**")
