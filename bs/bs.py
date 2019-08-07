@@ -1,6 +1,12 @@
 import discord
 from redbot.core import commands, Config, checks
 import brawlstats
+from bs4 import BeautifulSoup
+from ext.paginator import PaginatorSession
+import aiohttp
+import datetime
+import json
+import pytz
 
 class BrawlStarsCog(commands.Cog):
     
@@ -105,30 +111,46 @@ class BrawlStarsCog(commands.Cog):
         except Exception as e:
             return await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
 
-        embed=discord.Embed(color=discord.Colour.blue())
-        embed.set_author(name=f"{player.name} {player.tag}", icon_url="https://i.imgur.com/40U8PnF.png")
-        await ctx.send(embed=embed)
-        
-      @command.commands()  
-      async def Bpprofile(self, ctx):
-             embed = discord.Embed(color=0xFAA61A)
-        embed.set_author(name="{} (#{})".format(await self.tags.formatName(profiledata.name), profiledata.tag),
-                         icon_url=profiledata.club.badge_url if profiledata.club is not None else "",
-                         url="https://brawlstats.com/profile/" + profiledata.tag)
-        embed.set_thumbnail(url=profiledata.avatar_url)
-        embed.add_field(name="Trophies", value="{} {:,}".format(self.getLeagueEmoji(profiledata.trophies), profiledata.trophies), inline=True)
-        embed.add_field(name="Highest Trophies", value="{} {:,}".format(self.getLeagueEmoji(profiledata.highest_trophies), profiledata.highest_trophies), inline=True)
-        embed.add_field(name="Level", value="{} {:,}".format(self.emoji("xp"), profiledata.exp_level), inline=True)
-        if profiledata.club is not None:
-            embed.add_field(name="Club {}".format(profiledata.club.role),
-                            value=profiledata.club.name, inline=True)
-        embed.add_field(name="Brawlers Unlocked", value="{} {}/22".format(self.emoji("default"), profiledata.brawlers_unlocked), inline=True)
-        embed.add_field(name="Victories", value="{} {}".format(self.emoji("bountystar"), profiledata.victories), inline=True)
-        embed.add_field(name="Solo SD Victories", value="{} {}".format(self.emoji("showdown"), profiledata.solo_showdown_victories), inline=True)
-        embed.add_field(name="Duo SD Victories", value="{} {}".format(self.emoji("duoshowdown"), profiledata.duo_showdown_victories), inline=True)
-        embed.add_field(name="Best Time as Big Brawler", value="{} {}".format(self.emoji("bossfight"), profiledata.best_time_as_big_brawler), inline=True)
-        embed.add_field(name="Best Robo Rumble Time", value="{} {}".format(self.emoji("roborumble"), profiledata.best_robo_rumble_time), inline=True)
-        embed.set_footer(text=credits, icon_url=creditIcon)
+        else:
+            if self.check_tag(tag):
+                try:
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(f'https://brawlstats.io/players/{id}') as resp:
+                            data = await resp.read()
+                    soup = BeautifulSoup(data, 'lxml')
+                except Exception as e:
+                    await ctx.send(e)
+                else:
+                    success = True
+            else:
+                await ctx.send("Invalid tag. Tags can only contain the following characters: `0289PYLQGRJCUV`")
+        if success:
+            source = str(soup.find_all("img", class_="mr-2"))
+            src = source.split('src="')[1]
+            imgpath = src.split('" w')[0]
 
-        await ctx.send(embed=embed)
+            brawlers = get_all_attrs("div", "brawlers-brawler-slot d-inline-block")
+            top = str(brawlers[0])
+            name_after = top.split('brawlers/')[1]
+            highestbrawler = name_after.split('"')[0].title()
+
+            em = discord.Embed(color=discord.Color.green())
+            em.set_thumbnail(url=f'https://brawlstats.io{imgpath}')
+            em.title = f"{get_attr('div', 'player-name brawlstars-font')} (#{id})"
+            em.description = f"Band: {get_attr('div', 'band-name mr-2')} ({get_attr('div', 'band-tag')})"
+            em.add_field(name="Level", value=get_attr('div', 'experience-level'))
+            em.add_field(name="Experience", value=get_attr('div', 'progress-text'))
+            em.add_field(name="Trophies", value=get_all_attrs('div', 'trophies')[0].text)
+            em.add_field(name="Highest Trophies", value=get_all_attrs('div', 'trophies')[1].text)
+            em.add_field(name="Highest Brawler", value=highestbrawler)
+            em.add_field(name="Highest Brawler Trophies", value=get_all_attrs('div', 'trophies')[2].text)
+            em.add_field(name="Victories", value=get_attr('div', 'victories'))
+            em.add_field(name="Showdown Victories", value=get_attr('div', 'showdown-victories'))
+            em.add_field(name="Best time as boss", value=get_attr('div', 'boss-time'))
+            em.add_field(name="Best robo rumble time", value=get_attr('div', 'robo-time'))
+            await ctx.send(embed=em)
+
+        
+
+
         
