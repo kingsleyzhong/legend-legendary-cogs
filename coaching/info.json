@@ -1,0 +1,8 @@
+{
+  "author": ["Generaleoley, Fyn8, milan_25"],
+  "name" : "Coaching",
+  "description": "Cog for requesting coaching",
+  "install_msg": "Thank you for installing our coaching cog",
+  "short": "Clash coaching request",
+  "tags": ["Clash Royale", "Coaching"]
+}
