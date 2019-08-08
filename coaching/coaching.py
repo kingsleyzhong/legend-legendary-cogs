@@ -7,7 +7,7 @@ from redbot.core import Config, checks
 STUDENT_ROLES = []
 COACH_ROLES = []
 
-class Coaching:
+class CoachingCog(commands.cog):
   """Coaching Request Cog"""
   
   def __init__(self, bot):
