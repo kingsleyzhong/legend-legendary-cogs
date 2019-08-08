@@ -1,7 +1,7 @@
 import discord
 from redbot.core import commands, Config, checks
 import brawlstats
-from bs4 import BeautifulSoup
+import BeautifulSoup
 from ext.paginator import PaginatorSession
 import aiohttp
 import datetime
