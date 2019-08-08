@@ -7,7 +7,7 @@ from redbot.core import Config, checks
 STUDENT_ROLES = []
 COACH_ROLES = []
 
-class CoachingCog(commands.cog):
+class CoachingCog(commands.Cog):
   """Coaching Request Cog"""
   
   def __init__(self, bot):
@@ -22,6 +22,8 @@ class CoachingCog(commands.cog):
   async def coachreq(self, ctx):
     
     student = ctx.message.author
+    await ctx.send("Let's move to DM")
+    
     
     msg_coaches = ("**Coaching Request:** \n"
                    "**Discord Name:** {}\n"
@@ -30,7 +32,7 @@ class CoachingCog(commands.cog):
                    "**Timezone:** {} \n"
                    "**Time Avaliable:** {} \n"
                    "**Additional Information** {} \n"
-                   "**Player Profile:**)
+                   "**Player Profile:**")
     
              
                    
