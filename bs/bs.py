@@ -12,6 +12,8 @@ class BrawlStarsCog(commands.Cog):
         self.config = Config.get_conf(self, identifier=5245652)
         default_user = {"tag" : None}
         self.config.register_user(**default_user)
+        default_guild = {"clubs" : {}}
+        self.config.register_guild(**default_guild)
         
     async def initialize(self):
         bsapikey = await self.bot.db.api_tokens.get_raw("bsapi", default={"api_key": None})
@@ -191,9 +193,9 @@ class BrawlStarsCog(commands.Cog):
                 
                 embed=discord.Embed(description=f"```{self.remove_codes(club.description)}```")
                 embed.set_author(name=f"{club.name} #{club.tag}", icon_url=club.badge_url)
-                embed.add_field(name="Members", value=f"<:icon_gameroom:553299647729238016> {club.members_count}/100")
-                embed.add_field(name="Required Trophies", value= f"{self.get_league_emoji(club.required_trophies)} {club.required_trophies}")
                 embed.add_field(name="Total Trophies", value= f"<:bstrophy:552558722770141204> {club.trophies}")
+                embed.add_field(name="Required Trophies", value= f"{self.get_league_emoji(club.required_trophies)} {club.required_trophies}")
+                embed.add_field(name="Members", value=f"<:icon_gameroom:553299647729238016> {club.members_count}/100")
                 embed.add_field(name="Status", value= f"<:bslock:552560387279814690> {club.status}")
                 topm = ""
                 for i in range(10):
@@ -207,40 +209,38 @@ class BrawlStarsCog(commands.Cog):
             except Exception as e:
                 return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
         
-        if len((await self.config.guild(ctx.guild).clans()).keys()) < 1:
-            return await ctx.send(embed = self.badEmbed(f"This server has no clans saved. Save a clan by using {ctx.prefix}clans add!"))
+        if len((await self.config.guild(ctx.guild).clubs()).keys()) < 1:
+            return await ctx.send(embed = self.badEmbed(f"This server has no clubs saved. Save a club by using {ctx.prefix}clubs add!"))
                                 
         try:
             try:
-                clans = []
-                for key in (await self.config.guild(ctx.guild).clans()).keys():
-                    clan = await self.crapi.get_clan(await self.config.guild(ctx.guild).clans.get_raw(key, "tag"))
-                    clans.append(clan.raw_data)
-            except clashroyale.RequestError as e:
+                clubs = []
+                for key in (await self.config.guild(ctx.guild).clubs()).keys():
+                    club = await self.bsapi.get_club(await self.config.guild(ctx.guild).clubs.get_raw(key, "tag"))
+                    clubs.append(club)
+            except brawlstats.errors.RequestError as e:
                 offline = True
             
             embedFields = []
             
             if not offline:
-                clans = sorted(clans, key=lambda sort: (sort['requiredTrophies'], sort['clanScore']), reverse=True)
+                club = sorted(clubs, key=lambda sort: (sort.required_trophies, sort.trophies), reverse=True)
                 
-                for i in range(len(clans)):   
-                    cemoji = discord.utils.get(self.bot.emojis, name = str(clans[i]['badgeId']))
+                for i in range(len(clubs)):   
+                    cemoji = "<:bsband:600741378497970177>"#discord.utils.get(self.bot.emojis, name = str(clans[i]['badgeId']))
                     key = ""
-                    for k in (await self.config.guild(ctx.guild).clans()).keys():
-                        if clans[i]['tag'].replace("#", "") == await self.config.guild(ctx.guild).clans.get_raw(k, "tag"):
+                    for k in (await self.config.guild(ctx.guild).clubs()).keys():
+                        if clubs[i].tag.replace("#", "") == await self.config.guild(ctx.guild).clubs.get_raw(k, "tag"):
                             key = k
                     
-                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastMemberCount', value=clans[i]['members'])            
-                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastRequirement', value=clans[i]['requiredTrophies'])   
-                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastScore', value=clans[i]['clanScore'])               
-                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastPosition', value=i)               
-                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastBadgeId', value=clans[i]['badgeId'])   
-                    await self.config.guild(ctx.guild).clans.set_raw(key, 'warTrophies', value=clans[i]['clanWarTrophies'])   
+                    await self.config.guild(ctx.guild).clubs.set_raw(key, 'lastMemberCount', value=clubs[i].members_count)            
+                    await self.config.guild(ctx.guild).clubs.set_raw(key, 'lastRequirement', value=clubs[i].required_trophies)   
+                    await self.config.guild(ctx.guild).clubs.set_raw(key, 'lastScore', value=clubs[i].trophies)               
+                    await self.config.guild(ctx.guild).clubs.set_raw(key, 'lastPosition', value=i)                 
                    
-                    info = await self.config.guild(ctx.guild).clans.get_raw(key, "info", default="")
-                    e_name = f"{str(cemoji)} {clans[i]['name']} [{key}] ({clans[i]['tag']}) {info}"
-                    e_value = f"<:people:449645181826760734>`{clans[i]['members']}` <:trophycr:587316903001718789>`{clans[i]['requiredTrophies']}+` <:crstar:449647025999314954>`{clans[i]['clanScore']}` <:cw_trophy:449640114423988234>`{clans[i]['clanWarTrophies']}`"
+                    info = await self.config.guild(ctx.guild).clubs.get_raw(key, "info", default="")
+                    e_name = f"{str(cemoji)} {clubs[i].name} [{key}] ({clubs[i].tag}) {info}"
+                    e_value = f"<:icon_gameroom:553299647729238016>`{clubs[i].members_count}` {self.get_league_emoji(clubs[i].required_trophies)}`{clubs[i].required_trophies}+` <:bstrophy:552558722770141204>`{clubs[i].trophies}`"
                     embedFields.append([e_name, e_value])
             
             else:
@@ -268,8 +268,8 @@ class BrawlStarsCog(commands.Cog):
             embedsToSend = []                
             for i in range(0, len(embedFields), 8):
                 embed = discord.Embed(colour=colour)
-                embed.set_author(name=f"{ctx.guild.name} clans", icon_url=ctx.guild.icon_url)
-                footer = "API is offline, showing last saved data." if offline else f"Do you need more info about a clan? Use {ctx.prefix}clan [key]"
+                embed.set_author(name=f"{ctx.guild.name} clubs", icon_url=ctx.guild.icon_url)
+                footer = "API is offline, showing last saved data." if offline else f"Do you need more info about a club? Use {ctx.prefix}club [key]"
                 embed.set_footer(text = footer)
                 for e in embedFields[i:i+8]:
                     embed.add_field(name=e[0], value=e[1], inline=False)
@@ -292,6 +292,46 @@ class BrawlStarsCog(commands.Cog):
             else:
                 await ctx.send(embed=embedsToSend[0])
                                 
+        except Exception as e:
+            return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
+        
+    @commands.guild_only()
+    @commands.has_permissions(administrator = True) 
+    @clubs.command(name="add")
+    async def clans_add(self, ctx, key : str, tag : str):
+        """
+        Add a club to /clubs command
+        key - key for the club to be used in other commands
+        tag - in-game tag of the club
+        """
+        await ctx.trigger_typing()
+        if tag.startswith("#"):
+            tag = tag.strip('#').upper().replace('O', '0')
+        
+        if key in (await self.config.guild(ctx.guild).clubs()).keys():
+            return await ctx.send(embed = self.badEmbed("This club is already saved!"))
+
+        try:
+            club = await self.bsapi.get_club(tag)
+            result = {
+                "name" : club.name,
+                "nick" : key.title(),
+                "tag" : club.tag.replace("#", ""),
+                "lastMemberCount" : club.members_count,
+                "lastRequirement" : club.required_trophies,
+                "lastScore" : club.trophies,
+                "info" : ""
+                }
+            key = key.lower()
+            await self.config.guild(ctx.guild).clubs.set_raw(key, value=result)
+            await ctx.send(embed = self.goodEmbed(f"{club.name} was successfully saved in this server!"))
+
+        except brawlstats.errors.NotFoundError as e:
+            await ctx.send(embed = self.badEmbed("No club with this tag found, try again!"))
+
+        except brawlstats.errors.RequestError as e:
+            await ctx.send(embed = self.badEmbed(f"BS API is offline, please try again later! ({str(e)})"))
+
         except Exception as e:
             return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
 
