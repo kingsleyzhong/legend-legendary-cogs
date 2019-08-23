@@ -3,6 +3,7 @@ from redbot.core import commands, Config, checks
 from redbot.core.utils.embed import randomize_colour
 from discord.ext import tasks
 from datetime import datetime
+import time
 from random import choice
 
 class Tools(commands.Cog):
@@ -52,7 +53,7 @@ class Tools(commands.Cog):
         for m in countdowns.keys():
             chan = self.bot.get_channel(countdowns[m]["channel"])
             msg = await chan.fetch_message(m)
-            now = datetime.now()
+            now = time.now()
             finish = countdowns[m]["finish"]
             if now > finish:
                 await self.config.countdowns.clear_raw(m)
@@ -86,7 +87,7 @@ class Tools(commands.Cog):
 
         countdownMessage = await ctx.send(embed=discord.Embed(description=f"Time left: {self.convertToLeft(seconds)}", colour=discord.Colour.blue()))
 
-        await self.config.countdowns.set_raw(countdownMessage.id, value={"finish" : datetime.now() + seconds, "channel" : ctx.channel.id})
+        await self.config.countdowns.set_raw(countdownMessage.id, value={"finish" : time.now() + seconds, "channel" : ctx.channel.id})
         await ctx.message.delete(delay=10)
         
     @commands.command()
