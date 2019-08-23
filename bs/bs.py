@@ -120,7 +120,8 @@ class BrawlStarsCog(commands.Cog):
         embed.add_field(name="Best Time in Robo Rumble", value=f"<:roborumble:614516967092781076>{player.best_robo_rumble_time}")
         embed.add_field(name="Best Time as Big Brawler", value=f"<:biggame:614517022323245056>{player.best_time_as_big_brawler}")
         await ctx.send(embed=embed)
-
+        await ctx.send(player.name_color_code)
+        await ctx.send(player.avatar_url)
         
 
 
