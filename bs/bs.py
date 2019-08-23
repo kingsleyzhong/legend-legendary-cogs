@@ -113,7 +113,7 @@ class BrawlStarsCog(commands.Cog):
         embed.add_field(name="Unlocked Brawlers", value=f"{player.brawlers_unlocked}")
         if player.club is not None:
             embed.add_field(name="Club", value=f"{player.club.name}")
-            embed.add_field(name="Role", value=f"<:social:451063078096994304>{player.role.capitalize()}")
+            embed.add_field(name="Role", value=f"<:social:451063078096994304>{player.club.role.capitalize()}")
         embed.add_field(name="Total Wins", value=f"<:starcr:587705837817036821>{player.victories}")
         embed.add_field(name="Solo SD Wins", value=f"{player.solo_showdown_victories}")
         embed.add_field(name="Duo SD Wins", value=f"{player.duo_showdown_victories}")
