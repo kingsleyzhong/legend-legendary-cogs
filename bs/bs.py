@@ -80,12 +80,32 @@ class BrawlStarsCog(commands.Cog):
         
         except Exception as e:
             await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
-            
+    
+    @commands.command(aliases=['rbs'])
+    async def renamebs(self, ctx, member=None):
+        await ctx.trigger_typing()
+        prefix = ctx.prefix
+        member = ctx.author if member is None else member
+        
+        tag = await self.config.user(member).tag()
+        if tag is None:
+            return await ctx.send(embed = self.badEmbed(f"This user has no tag saved! Use {prefix}bssave <tag>"))
+        
+        player = await self.bsapi.get_player(tag)
+        nick = f"{player.name} | {player.club.name}" if player.club is not None else f"{player.name}"
+        try:
+            await member.edit(nick=nick[:31])
+            await ctx.send(f"Done! New nickname: [nick[:31]]")
+        except discord.Forbidden:
+            await ctx.send(f"I dont have permission to change nickname of this user!")
+        except Exception as e:
+            await ctx.send(f"Something went wrong: {str(e)}")
+    
     @commands.command(aliases=['bsp'])
     async def bsprofile(self, ctx, member=None):
         """Brawl Stars profile"""
         await ctx.trigger_typing()
-        prefix = "/"
+        prefix = ctx.prefix
         tag = ""
 
         member = ctx.author if member is None else member
