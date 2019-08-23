@@ -1,5 +1,8 @@
 import discord
 from redbot.core import commands, Config, checks
+from redbot.core.utils.embed import randomize_colour
+from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from random import choice
 import brawlstats
 
 class BrawlStarsCog(commands.Cog):
@@ -24,7 +27,33 @@ class BrawlStarsCog(commands.Cog):
     def goodEmbed(self, text):
         gembed = discord.Embed(color=0x45cafc)
         gembed.set_author(name=text, icon_url="https://i.imgur.com/qYmbGK6.png")
-        return gembed        
+        return gembed
+    
+    def get_league_emoji(self, trophies : int):
+        if trophies < 500:
+            return "<:league_icon_00:553294108802678787>"
+        elif trophies < 1000:
+            return "<:league_icon_01:553294108735569921>"
+        elif trophies < 2000:
+            return "<:league_icon_02:553294109167583296>"
+        elif trophies < 3000:
+            return "<:league_icon_03:553294109264052226>"
+        elif trophies < 4000:
+            return "<:league_icon_04:553294344413511682>"
+        elif trophies < 6000:
+            return "<:league_icon_05:553294344912764959>"
+        elif trophies < 8000:
+            return "<:league_icon_06:553294344841461775>"
+        elif trophies < 10000:
+            return "<:league_icon_07:553294109515972640>"
+        else:
+            return "<:league_icon_08:553294109217914910>"
+        
+    def remove_codes(self, text : str):
+        toremove = ["</c>", "<c1>", "<c2>", "<c3>", "<c4>", "<c5>", "<c6>", "<c7>", "<c8>", "<c9>", "<c0>"]
+        for code in toremove:
+            text = text.replace(code, "")
+        return text
 
     @commands.command()
     async def bssave(self, ctx, tag, member: discord.Member = None):
@@ -108,20 +137,163 @@ class BrawlStarsCog(commands.Cog):
         colour = player.name_color_code
         embed=discord.Embed(color=discord.Colour.from_rgb(int(colour[0:2], 16), int(colour[2:4], 16), int(colour[4:6], 16)))
         embed.set_author(name=f"{player.name} #{player.tag}", icon_url="https://i.imgur.com/ZwIP41S.png")
-        embed.add_field(name="Trophies", value=f"<:bstrophy:552558722770141204>{player.trophies}")
-        embed.add_field(name="Highest Trophies", value=f"<:totaltrophies:614517396111097866>{player.highest_trophies}")
-        embed.add_field(name="Level", value=f"<:exp:614517287809974405>{player.exp_level}")
-        embed.add_field(name="Unlocked Brawlers", value=f"<:brawlers:614518101983232020>{player.brawlers_unlocked}")
+        embed.add_field(name="Trophies", value=f"<:bstrophy:552558722770141204> {player.trophies}")
+        embed.add_field(name="Highest Trophies", value=f"<:totaltrophies:614517396111097866> {player.highest_trophies}")
+        embed.add_field(name="Level", value=f"<:exp:614517287809974405> {player.exp_level}")
+        embed.add_field(name="Unlocked Brawlers", value=f"<:brawlers:614518101983232020> {player.brawlers_unlocked}")
         if player.club is not None:
-            embed.add_field(name="Club", value=f"<:bsband:600741378497970177>{player.club.name}")
-            embed.add_field(name="Role", value=f"<:role:614520101621989435>{player.club.role.capitalize()}")
-        embed.add_field(name="3v3 Wins", value=f"<:3v3:614519914815815693>{player.victories}")
-        embed.add_field(name="Solo SD Wins", value=f"<:sd:614517124219666453>{player.solo_showdown_victories}")
-        embed.add_field(name="Duo SD Wins", value=f"<:duosd:614517166997372972>{player.duo_showdown_victories}")
-        embed.add_field(name="Best Time in Robo Rumble", value=f"<:roborumble:614516967092781076>{player.best_robo_rumble_time}")
-        embed.add_field(name="Best Time as Big Brawler", value=f"<:biggame:614517022323245056>{player.best_time_as_big_brawler}")
+            embed.add_field(name="Club", value=f"<:bsband:600741378497970177> {player.club.name}")
+            embed.add_field(name="Role", value=f"<:role:614520101621989435> {player.club.role.capitalize()}")
+        embed.add_field(name="3v3 Wins", value=f"<:3v3:614519914815815693> {player.victories}")
+        embed.add_field(name="Solo SD Wins", value=f"<:sd:614517124219666453> {player.solo_showdown_victories}")
+        embed.add_field(name="Duo SD Wins", value=f"<:duosd:614517166997372972> {player.duo_showdown_victories}")
+        embed.add_field(name="Best Time in Robo Rumble", value=f"<:roborumble:614516967092781076> {player.best_robo_rumble_time}")
+        embed.add_field(name="Best Time as Big Brawler", value=f"<:biggame:614517022323245056> {player.best_time_as_big_brawler}")
         await ctx.send(embed=embed)
         
+    @commands.guild_only()
+    @commands.group(aliases=['club'], invoke_without_command=True)
+    async def clubs(self, ctx, key:str=None):
+        """View all clubs saved in this server"""
+        offline = False
+        prefix = ctx.prefix
+        await ctx.trigger_typing()
+
+        if key == "forceoffline":
+            offline = True
+            key = None
+
+        if key is not None and key != "forceoffline":
+            try:
+                if key.startswith("<"):
+                    memberid = key.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
+                    member = discord.utils.get(ctx.guild.members, id=int(memberid))
+                    if member is not None:
+                        mtag = await self.config.user(member).tag()
+                        if mtag is None:
+                            return await ctx.send(embed = self.badEmbed(f"This user has no tag saved! Use {prefix}bssave <tag>"))
+
+                        try:
+                            player = await self.bsapi.get_player(mtag)
+                            tag = player.club.tag
+                        except brawlstats.errors.RequestError as e:
+                            await ctx.send(embed = self.badEmbed(f"BS API is offline, please try again later! ({str(e)})"))
+                else:
+                    tag = await self.config.guild(ctx.guild).clubs.get_raw(key.lower(), "tag", default=None)
+                    if tag is None:
+                        return await ctx.send(embed = self.badEmbed(f"{key.title()} isn't saved club in this server!"))
+                try:
+                    club = await self.bsapi.get_club(tag)
+                
+                except brawlstats.errors.RequestError as e:
+                    await ctx.send(embed = self.badEmbed(f"BS API is offline, please try again later! ({str(e)})"))
+                    return
+                
+                embed=discord.Embed(description=f"```{self.remove_codes(club.description)}```")
+                embed.set_author(name=f"{club.name} #{club.tag}", icon_url=club.badge_url)
+                embed.add_field(name="Members", value=f"<:icon_gameroom:553299647729238016> {club.members_count}/100")
+                embed.add_field(name="Required Trophies", value= f"{self.get_league_emoji(club.required_trophies)} {club.required_trophies}")
+                embed.add_field(name="Total Trophies", value= f"<:bstrophy:552558722770141204> {club.trophies}")
+                embed.add_field(name="Status", value= f"<:bslock:552560387279814690> {club.status})
+                topm = ""
+                for i in range(10):
+                    try:
+                        topm += f"{self.get_league_emoji(club.members[i].trophies)}`{club.members[i].trophies}` {self.remove_codes(club.members[i].name)}\n"
+                    except IndexError:
+                        pass
+                embed.add_field(name = "Top Members", value = topm, inline = False)
+                return await ctx.send(embed=randomize_colour(embed))            
+                
+            except Exception as e:
+                return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
+        
+        if len((await self.config.guild(ctx.guild).clans()).keys()) < 1:
+            return await ctx.send(embed = self.badEmbed(f"This server has no clans saved. Save a clan by using {ctx.prefix}clans add!"))
+                                
+        try:
+            try:
+                clans = []
+                for key in (await self.config.guild(ctx.guild).clans()).keys():
+                    clan = await self.crapi.get_clan(await self.config.guild(ctx.guild).clans.get_raw(key, "tag"))
+                    clans.append(clan.raw_data)
+            except clashroyale.RequestError as e:
+                offline = True
+            
+            embedFields = []
+            
+            if not offline:
+                clans = sorted(clans, key=lambda sort: (sort['requiredTrophies'], sort['clanScore']), reverse=True)
+                
+                for i in range(len(clans)):   
+                    cemoji = discord.utils.get(self.bot.emojis, name = str(clans[i]['badgeId']))
+                    key = ""
+                    for k in (await self.config.guild(ctx.guild).clans()).keys():
+                        if clans[i]['tag'].replace("#", "") == await self.config.guild(ctx.guild).clans.get_raw(k, "tag"):
+                            key = k
+                    
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastMemberCount', value=clans[i]['members'])            
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastRequirement', value=clans[i]['requiredTrophies'])   
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastScore', value=clans[i]['clanScore'])               
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastPosition', value=i)               
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'lastBadgeId', value=clans[i]['badgeId'])   
+                    await self.config.guild(ctx.guild).clans.set_raw(key, 'warTrophies', value=clans[i]['clanWarTrophies'])   
+                   
+                    info = await self.config.guild(ctx.guild).clans.get_raw(key, "info", default="")
+                    e_name = f"{str(cemoji)} {clans[i]['name']} [{key}] ({clans[i]['tag']}) {info}"
+                    e_value = f"<:people:449645181826760734>`{clans[i]['members']}` <:trophycr:587316903001718789>`{clans[i]['requiredTrophies']}+` <:crstar:449647025999314954>`{clans[i]['clanScore']}` <:cw_trophy:449640114423988234>`{clans[i]['clanWarTrophies']}`"
+                    embedFields.append([e_name, e_value])
+            
+            else:
+                offclans = []
+                for k in (await self.config.guild(ctx.guild).clans()).keys():
+                    offclans.append([await self.config.guild(ctx.guild).clans.get_raw(k, "lastPosition"), k])
+                offclans = sorted(offclans, key=lambda x: x[0])
+                                
+                for clan in offclans:
+                    ckey = clan[1]
+                    cscore = await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastScore")
+                    cname = await self.config.guild(ctx.guild).clans.get_raw(ckey, "name")
+                    ctag = await self.config.guild(ctx.guild).clans.get_raw(ckey, "tag")
+                    cinfo = await self.config.guild(ctx.guild).clans.get_raw(ckey, "info")
+                    cmembers = await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastMemberCount")
+                    creq = await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastRequirement")
+                    ccw = await self.config.guild(ctx.guild).clans.get_raw(ckey, "warTrophies")        
+                    cemoji = discord.utils.get(self.bot.emojis, name = str(await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastBadgeId")))
+                    
+                    e_name = f"{cemoji} {cname} [{ckey}] (#{ctag}) {cinfo}"
+                    e_value = f"<:people:449645181826760734>`{cmembers}` <:trophycr:587316903001718789>`{creq}+` <:crstar:449647025999314954>`{cscore}` <:cw_trophy:449640114423988234>`{ccw}`"
+                    embedFields.append([e_name, e_value])
+            
+            colour = choice([discord.Colour.green(), discord.Colour.blue(), discord.Colour.purple(), discord.Colour.orange(), discord.Colour.red(), discord.Colour.teal()])
+            embedsToSend = []                
+            for i in range(0, len(embedFields), 8):
+                embed = discord.Embed(colour=colour)
+                embed.set_author(name=f"{ctx.guild.name} clans", icon_url=ctx.guild.icon_url)
+                footer = "API is offline, showing last saved data." if offline else f"Do you need more info about a clan? Use {ctx.prefix}clan [key]"
+                embed.set_footer(text = footer)
+                for e in embedFields[i:i+8]:
+                    embed.add_field(name=e[0], value=e[1], inline=False)
+                embedsToSend.append(embed)
+             
+            async def next_page(ctx: commands.Context, pages: list, controls: dict, message: discord.Message, page: int, timeout: float, emoji: str):
+                perms = message.channel.permissions_for(ctx.me)
+                if perms.manage_messages:
+                    try:
+                        await message.remove_reaction(emoji, ctx.author)
+                    except discord.NotFound:
+                        pass
+                if page == len(pages) - 1:
+                    page = 0
+                else:
+                    page = page + 1
+                return await menu(ctx, pages, controls, message=message, page=page, timeout=timeout)                  
+            if len(embedsToSend) > 1:                   
+                await menu(ctx, embedsToSend, {"➡": next_page} , timeout=300)
+            else:
+                await ctx.send(embed=embedsToSend[0])
+                                
+        except Exception as e:
+            return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
 
 
         
