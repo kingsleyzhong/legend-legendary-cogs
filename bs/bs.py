@@ -113,8 +113,8 @@ class BrawlStarsCog(commands.Cog):
         embed.add_field(name="Unlocked Brawlers", value=f"<:brawlers:614518101983232020>{player.brawlers_unlocked}")
         if player.club is not None:
             embed.add_field(name="Club", value=f"<:bsband:600741378497970177>{player.club.name}")
-            embed.add_field(name="Role", value=f"<:role:614518346792173598>{player.club.role.capitalize()}")
-        embed.add_field(name="Total Wins", value=f"{player.victories}")
+            embed.add_field(name="Role", value=f"<:role:614520101621989435>{player.club.role.capitalize()}")
+        embed.add_field(name="3v3 Wins", value=f"<:3v3:614519914815815693>{player.victories}")
         embed.add_field(name="Solo SD Wins", value=f"<:sd:614517124219666453>{player.solo_showdown_victories}")
         embed.add_field(name="Duo SD Wins", value=f"<:duosd:614517166997372972>{player.duo_showdown_victories}")
         embed.add_field(name="Best Time in Robo Rumble", value=f"<:roborumble:614516967092781076>{player.best_robo_rumble_time}")
