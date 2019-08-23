@@ -196,7 +196,7 @@ class ClashRoyaleCog(commands.Cog):
                 embed.add_field(name="Average Donations Per Week", value= f"<:deck:451062749565550602> {str(clan['donationsPerWeek'])}")
                 return await ctx.send(embed=randomize_colour(embed))            
                 
-            except ZeroDivisionError as e:
+            except Exception as e:
                 return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
         
         if len((await self.config.guild(ctx.guild).clans()).keys()) < 1:
@@ -284,7 +284,7 @@ class ClashRoyaleCog(commands.Cog):
             else:
                 await ctx.send(embed=embedsToSend[0])
                                 
-        except ZeroDivisionError as e:
+        except Exception as e:
             return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
                                 
                                 
