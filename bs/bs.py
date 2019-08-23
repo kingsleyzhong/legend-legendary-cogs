@@ -194,7 +194,7 @@ class BrawlStarsCog(commands.Cog):
                 embed.add_field(name="Members", value=f"<:icon_gameroom:553299647729238016> {club.members_count}/100")
                 embed.add_field(name="Required Trophies", value= f"{self.get_league_emoji(club.required_trophies)} {club.required_trophies}")
                 embed.add_field(name="Total Trophies", value= f"<:bstrophy:552558722770141204> {club.trophies}")
-                embed.add_field(name="Status", value= f"<:bslock:552560387279814690> {club.status})
+                embed.add_field(name="Status", value= f"<:bslock:552560387279814690>" {club.status})
                 topm = ""
                 for i in range(10):
                     try:
