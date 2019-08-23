@@ -95,7 +95,7 @@ class BrawlStarsCog(commands.Cog):
         nick = f"{player.name} | {player.club.name}" if player.club is not None else f"{player.name}"
         try:
             await member.edit(nick=nick[:31])
-            await ctx.send(f"Done! New nickname: {nick[:31]}")
+            await ctx.send(f"Done! New nickname: `{nick[:31]}`")
         except discord.Forbidden:
             await ctx.send(f"I dont have permission to change nickname of this user!")
         except Exception as e:
