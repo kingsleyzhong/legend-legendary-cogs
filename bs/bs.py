@@ -139,7 +139,7 @@ class BrawlStarsCog(commands.Cog):
         colour = player.name_color_code
         embed=discord.Embed(color=discord.Colour.from_rgb(int(colour[0:2], 16), int(colour[2:4], 16), int(colour[4:6], 16)))
         embed.set_author(name=f"{player.name} #{player.tag}", icon_url="https://i.imgur.com/ZwIP41S.png")
-        embed.add_field(name="Trophies", value=f"<:bstrophy:552558722770141204> {player.trophies}")
+        embed.add_field(name="Trophies", value=f"{self.get_league_emoji(clubs[i].required_trophies)}> {player.trophies}")
         embed.add_field(name="Highest Trophies", value=f"<:totaltrophies:614517396111097866> {player.highest_trophies}")
         embed.add_field(name="Level", value=f"<:exp:614517287809974405> {player.exp_level}")
         embed.add_field(name="Unlocked Brawlers", value=f"<:brawlers:614518101983232020> {player.brawlers_unlocked}")
@@ -224,7 +224,7 @@ class BrawlStarsCog(commands.Cog):
             embedFields = []
             
             if not offline:
-                club = sorted(clubs, key=lambda sort: (sort.required_trophies, sort.trophies), reverse=True)
+                club = sorted(clubs, key=lambda sort: (sort.trophies, sort.required_trophies, sort.members_count), reverse=True)
                 
                 for i in range(len(clubs)):   
                     cemoji = "<:bsband:600741378497970177>"#discord.utils.get(self.bot.emojis, name = str(clans[i]['badgeId']))
@@ -239,29 +239,28 @@ class BrawlStarsCog(commands.Cog):
                     await self.config.guild(ctx.guild).clubs.set_raw(key, 'lastPosition', value=i)                 
                    
                     info = await self.config.guild(ctx.guild).clubs.get_raw(key, "info", default="")
-                    e_name = f"{str(cemoji)} {clubs[i].name} [{key}] ({clubs[i].tag}) {info}"
-                    e_value = f"<:icon_gameroom:553299647729238016>`{clubs[i].members_count}` {self.get_league_emoji(clubs[i].required_trophies)}`{clubs[i].required_trophies}+` <:bstrophy:552558722770141204>`{clubs[i].trophies}`"
+                    e_name = f"{clubs[i].name} [{key}] #{clubs[i].tag} {info}"
+                    e_value = f"<:bstrophy:552558722770141204>`{clubs[i].trophies}` {self.get_league_emoji(clubs[i].required_trophies)}`{clubs[i].required_trophies}+` <:icon_gameroom:553299647729238016>`{clubs[i].members_count}`"
                     embedFields.append([e_name, e_value])
             
             else:
-                offclans = []
-                for k in (await self.config.guild(ctx.guild).clans()).keys():
-                    offclans.append([await self.config.guild(ctx.guild).clans.get_raw(k, "lastPosition"), k])
-                offclans = sorted(offclans, key=lambda x: x[0])
+                offclubs = []
+                for k in (await self.config.guild(ctx.guild).clubs()).keys():
+                    offclubs.append([await self.config.guild(ctx.guild).clubs.get_raw(k, "lastPosition"), k])
+                offclubs= sorted(offclubs, key=lambda x: x[0])
                                 
-                for clan in offclans:
-                    ckey = clan[1]
-                    cscore = await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastScore")
-                    cname = await self.config.guild(ctx.guild).clans.get_raw(ckey, "name")
-                    ctag = await self.config.guild(ctx.guild).clans.get_raw(ckey, "tag")
-                    cinfo = await self.config.guild(ctx.guild).clans.get_raw(ckey, "info")
-                    cmembers = await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastMemberCount")
-                    creq = await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastRequirement")
-                    ccw = await self.config.guild(ctx.guild).clans.get_raw(ckey, "warTrophies")        
-                    cemoji = discord.utils.get(self.bot.emojis, name = str(await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastBadgeId")))
+                for club in offclubs:
+                    ckey = club[1]
+                    cscore = await self.config.guild(ctx.guild).clubs.get_raw(ckey, "lastScore")
+                    cname = await self.config.guild(ctx.guild).clubs.get_raw(ckey, "name")
+                    ctag = await self.config.guild(ctx.guild).clubs.get_raw(ckey, "tag")
+                    cinfo = await self.config.guild(ctx.guild).clubs.get_raw(ckey, "info")
+                    cmembers = await self.config.guild(ctx.guild).clubs.get_raw(ckey, "lastMemberCount")
+                    creq = await self.config.guild(ctx.guild).clubs.get_raw(ckey, "lastRequirement")       
+                    #cemoji = discord.utils.get(self.bot.emojis, name = str(await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastBadgeId")))
                     
-                    e_name = f"{cemoji} {cname} [{ckey}] (#{ctag}) {cinfo}"
-                    e_value = f"<:people:449645181826760734>`{cmembers}` <:trophycr:587316903001718789>`{creq}+` <:crstar:449647025999314954>`{cscore}` <:cw_trophy:449640114423988234>`{ccw}`"
+                    e_name = f"{cname} [{ckey}] (#{ctag}) {cinfo}"
+                    e_value = f"<:bstrophy:552558722770141204>`{cscore}` {self.get_league_emoji(creq)}`{creq}+` <:icon_gameroom:553299647729238016>`{cmembers}` "
                     embedFields.append([e_name, e_value])
             
             colour = choice([discord.Colour.green(), discord.Colour.blue(), discord.Colour.purple(), discord.Colour.orange(), discord.Colour.red(), discord.Colour.teal()])
