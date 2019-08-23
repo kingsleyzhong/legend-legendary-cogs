@@ -1,12 +1,6 @@
 import discord
 from redbot.core import commands, Config, checks
 import brawlstats
-import BeautifulSoup
-from ext.paginator import PaginatorSession
-import aiohttp
-import datetime
-import json
-import pytz
 
 class BrawlStarsCog(commands.Cog):
     
