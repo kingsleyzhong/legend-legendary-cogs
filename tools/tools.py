@@ -47,7 +47,7 @@ class Tools(commands.Cog):
         else:
             return f"{sec} seconds"
 
-    @tasks.loop(seconds=10.0)
+    @tasks.loop(seconds=60.0)
     async def updater(self):
         countdowns = await self.config.countdowns()
         for m in countdowns.keys():
