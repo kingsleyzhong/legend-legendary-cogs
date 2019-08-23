@@ -106,7 +106,7 @@ class BrawlStarsCog(commands.Cog):
             return await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
 
         colour = player.name_color_code
-        embed=discord.Embed(color=discord.Colour.from_rgb(int(colour[0:1], 16), int(colour[2:3], 16), int(colour[4:5], 16)))
+        embed=discord.Embed(color=discord.Colour.from_rgb(int(colour[0:2], 16), int(colour[2:4], 16), int(colour[4:6], 16)))
         embed.set_author(name=f"{player.name} #{player.tag}", icon_url="https://i.imgur.com/4HIznBu.png")
         embed.add_field(name="Trophies", value=f"<:bstrophy:552558722770141204>{player.trophies}")
         embed.add_field(name="Highest Trophies", value=f"<:totaltrophies:614517396111097866>{player.highest_trophies}")
