@@ -82,7 +82,7 @@ class BrawlStarsCog(commands.Cog):
             await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
     
     @commands.command(aliases=['rbs'])
-    async def renamebs(self, ctx, member=None):
+    async def renamebs(self, ctx, member:discord.Member=None):
         await ctx.trigger_typing()
         prefix = ctx.prefix
         member = ctx.author if member is None else member
@@ -95,7 +95,7 @@ class BrawlStarsCog(commands.Cog):
         nick = f"{player.name} | {player.club.name}" if player.club is not None else f"{player.name}"
         try:
             await member.edit(nick=nick[:31])
-            await ctx.send(f"Done! New nickname: [nick[:31]]")
+            await ctx.send(f"Done! New nickname: {nick[:31]}")
         except discord.Forbidden:
             await ctx.send(f"I dont have permission to change nickname of this user!")
         except Exception as e:
@@ -159,7 +159,7 @@ class BrawlStarsCog(commands.Cog):
         colour = player.name_color_code
         embed=discord.Embed(color=discord.Colour.from_rgb(int(colour[0:2], 16), int(colour[2:4], 16), int(colour[4:6], 16)))
         embed.set_author(name=f"{player.name} #{player.tag}", icon_url="https://i.imgur.com/ZwIP41S.png")
-        embed.add_field(name="Trophies", value=f"{self.get_league_emoji(player.trophies)}> {player.trophies}")
+        embed.add_field(name="Trophies", value=f"{self.get_league_emoji(player.trophies)} {player.trophies}")
         embed.add_field(name="Highest Trophies", value=f"<:totaltrophies:614517396111097866> {player.highest_trophies}")
         embed.add_field(name="Level", value=f"<:exp:614517287809974405> {player.exp_level}")
         embed.add_field(name="Unlocked Brawlers", value=f"<:brawlers:614518101983232020> {player.brawlers_unlocked}")
