@@ -107,7 +107,7 @@ class BrawlStarsCog(commands.Cog):
 
         colour = player.name_color_code
         embed=discord.Embed(color=discord.Colour.from_rgb(int(colour[0:2], 16), int(colour[2:4], 16), int(colour[4:6], 16)))
-        embed.set_author(name=f"{player.name} #{player.tag}", icon_url="https://i.imgur.com/c56NTIM.jpg")
+        embed.set_author(name=f"{player.name} #{player.tag}", icon_url="https://i.imgur.com/ZwIP41S.png")
         embed.add_field(name="Trophies", value=f"<:bstrophy:552558722770141204>{player.trophies}")
         embed.add_field(name="Highest Trophies", value=f"<:totaltrophies:614517396111097866>{player.highest_trophies}")
         embed.add_field(name="Level", value=f"<:exp:614517287809974405>{player.exp_level}")
