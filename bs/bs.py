@@ -105,8 +105,8 @@ class BrawlStarsCog(commands.Cog):
         except Exception as e:
             return await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
 
-        embed=discord.Embed(color=discord.Colour.blue())
-        embed.set_author(name=f"{player.name} #{player.tag}", icon_url=player.avatar_url)
+        embed=discord.Embed(color=player.name_color_code)
+        embed.set_author(name=f"{player.name} #{player.tag}", icon_url="https://i.imgur.com/4HIznBu.png")
         embed.add_field(name="Trophies", value=f"<:bstrophy:552558722770141204>{player.trophies}")
         embed.add_field(name="Highest Trophies", value=f"<:totaltrophies:614517396111097866>{player.highest_trophies}")
         embed.add_field(name="Level", value=f"<:exp:614517287809974405>{player.exp_level}")
@@ -120,8 +120,6 @@ class BrawlStarsCog(commands.Cog):
         embed.add_field(name="Best Time in Robo Rumble", value=f"<:roborumble:614516967092781076>{player.best_robo_rumble_time}")
         embed.add_field(name="Best Time as Big Brawler", value=f"<:biggame:614517022323245056>{player.best_time_as_big_brawler}")
         await ctx.send(embed=embed)
-        await ctx.send(player.name_color_code)
-        await ctx.send(player.avatar_url)
         
 
 
