@@ -53,7 +53,7 @@ class Tools(commands.Cog):
         for m in countdowns.keys():
             chan = self.bot.get_channel(countdowns[m]["channel"])
             msg = await chan.fetch_message(m)
-            now = time.now()
+            now = int(time())
             finish = countdowns[m]["finish"]
             if now > finish:
                 await self.config.countdowns.clear_raw(m)
@@ -87,7 +87,7 @@ class Tools(commands.Cog):
 
         countdownMessage = await ctx.send(embed=discord.Embed(description=f"Time left: {self.convertToLeft(seconds)}", colour=discord.Colour.blue()))
 
-        await self.config.countdowns.set_raw(countdownMessage.id, value={"finish" : time.now() + seconds, "channel" : ctx.channel.id})
+        await self.config.countdowns.set_raw(countdownMessage.id, value={"finish" : int(time()) + seconds, "channel" : ctx.channel.id})
         await ctx.message.delete(delay=10)
         
     @commands.command()
