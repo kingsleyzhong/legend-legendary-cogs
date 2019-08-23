@@ -3,7 +3,7 @@ from redbot.core import commands, Config, checks
 from redbot.core.utils.embed import randomize_colour
 from discord.ext import tasks
 from datetime import datetime
-import time
+from time import time
 from random import choice
 
 class Tools(commands.Cog):
