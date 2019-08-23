@@ -111,44 +111,21 @@ class BrawlStarsCog(commands.Cog):
         except Exception as e:
             return await ctx.send("**Something went wrong, please send a personal message to <@590906101554348053> or try again!**")
 
-        else:
-            if self.check_tag(tag):
-                try:
-                    async with aiohttp.ClientSession() as session:
-                        async with session.get(f'https://brawlstats.io/players/{id}') as resp:
-                            data = await resp.read()
-                    soup = BeautifulSoup(data, 'lxml')
-                except Exception as e:
-                    await ctx.send(e)
-                else:
-                    success = True
-            else:
-                await ctx.send("Invalid tag. Tags can only contain the following characters: `0289PYLQGRJCUV`")
-        if success:
-            source = str(soup.find_all("img", class_="mr-2"))
-            src = source.split('src="')[1]
-            imgpath = src.split('" w')[0]
-
-            brawlers = get_all_attrs("div", "brawlers-brawler-slot d-inline-block")
-            top = str(brawlers[0])
-            name_after = top.split('brawlers/')[1]
-            highestbrawler = name_after.split('"')[0].title()
-
-            em = discord.Embed(color=discord.Color.green())
-            em.set_thumbnail(url=f'https://brawlstats.io{imgpath}')
-            em.title = f"{get_attr('div', 'player-name brawlstars-font')} (#{id})"
-            em.description = f"Band: {get_attr('div', 'band-name mr-2')} ({get_attr('div', 'band-tag')})"
-            em.add_field(name="Level", value=get_attr('div', 'experience-level'))
-            em.add_field(name="Experience", value=get_attr('div', 'progress-text'))
-            em.add_field(name="Trophies", value=get_all_attrs('div', 'trophies')[0].text)
-            em.add_field(name="Highest Trophies", value=get_all_attrs('div', 'trophies')[1].text)
-            em.add_field(name="Highest Brawler", value=highestbrawler)
-            em.add_field(name="Highest Brawler Trophies", value=get_all_attrs('div', 'trophies')[2].text)
-            em.add_field(name="Victories", value=get_attr('div', 'victories'))
-            em.add_field(name="Showdown Victories", value=get_attr('div', 'showdown-victories'))
-            em.add_field(name="Best time as boss", value=get_attr('div', 'boss-time'))
-            em.add_field(name="Best robo rumble time", value=get_attr('div', 'robo-time'))
-            await ctx.send(embed=em)
+        embed=discord.Embed(color=discord.Colour.blue())
+        embed.set_author(name=f"{player.name} {player.tag}", icon_url="https://i.imgur.com/40U8PnF.png")
+        embed.add_field(name="Trophies", value=f"<:trophycr:587316903001718789>{player.trophies}")
+        embed.add_field(name="Highest Trophies", value=f"<:nicertrophy:587565339038973963>{player.highest_trophies}")
+        embed.add_field(name="Level", value=f"<:level:451064038420381717>{player.exp_level}")
+        embed.add_field(name="Unlocked Brawlers", value=f"{player.brawlers_unlocked}")
+        if player.club is not None:
+            embed.add_field(name="Club", value=f"{player.club.name}")
+            embed.add_field(name="Role", value=f"<:social:451063078096994304>{player.role.capitalize()}")
+        embed.add_field(name="Total Wins", value=f"<:starcr:587705837817036821>{player.victories}")
+        embed.add_field(name="Solo SD Wins", value=f"{player.solo_showdown_victories}")
+        embed.add_field(name="Duo SD Wins", value=f"{player.duo_showdown_victories}")
+        embed.add_field(name="Best Time in Robo Rumble", value=f"{player.duo_showdown_victories}")
+        embed.add_field(name="Best Time as Big Brawler", value=f"{player.duo_showdown_victories}")
+        await ctx.send(embed=embed)
 
         
 
