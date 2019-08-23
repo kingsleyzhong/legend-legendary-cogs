@@ -334,5 +334,33 @@ class BrawlStarsCog(commands.Cog):
         except Exception as e:
             return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
 
+    @commands.guild_only()
+    @commands.has_permissions(administrator = True)
+    @clubs.command(name="remove")
+    async def clubs_remove(self, ctx, key : str):
+        """
+        Remove a club from /clubs command
+        key - key for the club used in commands
+        """
+        await ctx.trigger_typing()
+        key = key.lower()
+        
+        try:
+            name = await self.config.guild(ctx.guild).clubs.get_raw(key, "name")
+            await self.config.guild(ctx.guild).clubs.clear_raw(key)
+            await ctx.send(embed = self.goodEmbed(f"{name} was successfully removed from this server!"))
+        except KeyError:
+            await ctx.send(embed = self.badEmbed(f"{key.title()} isn't saved club!"))
 
+    @commands.guild_only()
+    @commands.has_permissions(administrator = True)
+    @clubs.command(name="info")
+    async def clans_info(self, ctx, key : str, *, info : str = ""):
+        """Edit club info"""
+        await ctx.trigger_typing()
+        try:
+            await self.config.guild(ctx.guild).clubs.set_raw(key, "info", value=info)
+            await ctx.send(embed = self.goodEmbed("Club info successfully edited!"))
+        except KeyError:
+            await ctx.send(embed = self.badEmbed(f"{key.title()} isn't saved club in this server!"))
         
