@@ -52,13 +52,13 @@ class Tools(commands.Cog):
         for m in countdowns.keys():
             chan = self.bot.get_channel(countdowns[m]["channel"])
             msg = await chan.fetch_message(m)
-            seconds = countdowns[m]["left"]-60
-            if seconds < 0:
+            now = datetime.now()
+            finish = countdowns[m]["finish"]
+            if now > finish:
                 await self.config.countdowns.clear_raw(m)
                 await msg.edit(embed=discord.Embed(description="Countdown ended!", colour=discord.Colour.red()))
             else:
-                await msg.edit(embed=discord.Embed(description=f"Time left: {self.convertToLeft(seconds)}", colour=discord.Colour.blue()))
-                await self.config.countdowns.set_raw(m, "left", value=seconds)
+                await msg.edit(embed=discord.Embed(description=f"Time left: {self.convertToLeft(finish-now)}", colour=discord.Colour.blue()))
     
     @updater.before_loop
     async def before_updater(self):
@@ -86,7 +86,7 @@ class Tools(commands.Cog):
 
         countdownMessage = await ctx.send(embed=discord.Embed(description=f"Time left: {self.convertToLeft(seconds)}", colour=discord.Colour.blue()))
 
-        await self.config.countdowns.set_raw(countdownMessage.id, value={"left" : seconds, "channel" : ctx.channel.id})
+        await self.config.countdowns.set_raw(countdownMessage.id, value={"finish" : datetime.now() + seconds, "channel" : ctx.channel.id})
         await ctx.message.delete(delay=10)
         
     @commands.command()
