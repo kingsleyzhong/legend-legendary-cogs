@@ -227,7 +227,7 @@ class BrawlStarsCog(commands.Cog):
                 embed.add_field(name = "Top Members", value = topm, inline = False)
                 return await ctx.send(embed=randomize_colour(embed))            
                 
-            except Exception as e:
+            except ZeroDivisionError as e:
                 return await ctx.send("**Something went wrong while displaying club, please send a personal message to LA Modmail bot or try again!**")
         
         if len((await self.config.guild(ctx.guild).clubs()).keys()) < 1:
