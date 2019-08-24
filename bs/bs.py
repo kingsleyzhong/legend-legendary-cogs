@@ -226,8 +226,8 @@ class BrawlStarsCog(commands.Cog):
                 embed.add_field(name = "Top Members", value = topm, inline = False)
                 return await ctx.send(embed=randomize_colour(embed))            
                 
-            except ZeroDivisionError as e:
-                return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
+            except Exception as e:
+                return await ctx.send("**Something went wrong while displaying club, please send a personal message to LA Modmail bot or try again!**")
         
         if len((await self.config.guild(ctx.guild).clubs()).keys()) < 1:
             return await ctx.send(embed = self.badEmbed(f"This server has no clubs saved. Save a club by using {ctx.prefix}clubs add!"))
@@ -238,9 +238,9 @@ class BrawlStarsCog(commands.Cog):
                 for key in (await self.config.guild(ctx.guild).clubs()).keys():
                     club = await self.bsapi.get_club(await self.config.guild(ctx.guild).clubs.get_raw(key, "tag"))
                     clubs.append(club)
+                    await asyncio.sleep(1)
             except brawlstats.errors.RequestError as e:
                 offline = True
-                print(str(e))
             
             embedFields = []
             
