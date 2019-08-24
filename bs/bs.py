@@ -261,7 +261,7 @@ class BrawlStarsCog(commands.Cog):
                     await self.config.guild(ctx.guild).clubs.set_raw(key, 'lastPosition', value=i)                 
                    
                     info = await self.config.guild(ctx.guild).clubs.get_raw(key, "info", default="")
-                    e_name = f"{clubs[i].name} [{key}] #{clubs[i].tag} {info}"
+                    e_name = f"<:bsband:600741378497970177> {clubs[i].name} [{key}] #{clubs[i].tag} {info}"
                     e_value = f"<:bstrophy:552558722770141204>`{clubs[i].trophies}` {self.get_league_emoji(clubs[i].required_trophies)}`{clubs[i].required_trophies}+` <:icon_gameroom:553299647729238016>`{clubs[i].members_count}`"
                     embedFields.append([e_name, e_value])
             
@@ -281,7 +281,7 @@ class BrawlStarsCog(commands.Cog):
                     creq = await self.config.guild(ctx.guild).clubs.get_raw(ckey, "lastRequirement")       
                     #cemoji = discord.utils.get(self.bot.emojis, name = str(await self.config.guild(ctx.guild).clans.get_raw(ckey, "lastBadgeId")))
                     
-                    e_name = f"<:bsband:600741378497970177> {cname} [{ckey}] (#{ctag}) {cinfo}"
+                    e_name = f"<:bsband:600741378497970177> {cname} [{ckey}] #{ctag} {cinfo}"
                     e_value = f"<:bstrophy:552558722770141204>`{cscore}` {self.get_league_emoji(creq)}`{creq}+` <:icon_gameroom:553299647729238016>`{cmembers}` "
                     embedFields.append([e_name, e_value])
             
