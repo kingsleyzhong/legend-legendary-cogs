@@ -246,7 +246,7 @@ class BrawlStarsCog(commands.Cog):
             embedFields = []
             
             if not offline:
-                club = sorted(clubs, key=lambda sort: (sort.trophies, sort.required_trophies, sort.members_count), reverse=True)
+                club = sorted(clubs, key=lambda sort: (sort.trophies), reverse=True)
                 
                 for i in range(len(clubs)):   
                     cemoji = "<:bsband:600741378497970177>"
