@@ -3,6 +3,7 @@ from redbot.core import commands, Config, checks
 from redbot.core.utils.embed import randomize_colour
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 from random import choice
+import asyncio
 import brawlstats
 
 class BrawlStarsCog(commands.Cog):
