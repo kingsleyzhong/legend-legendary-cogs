@@ -240,6 +240,7 @@ class BrawlStarsCog(commands.Cog):
                     clubs.append(club)
             except brawlstats.errors.RequestError as e:
                 offline = True
+                print(str(e))
             
             embedFields = []
             
