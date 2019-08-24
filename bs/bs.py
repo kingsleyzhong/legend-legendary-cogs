@@ -198,6 +198,8 @@ class BrawlStarsCog(commands.Cog):
 
                         try:
                             player = await self.bsapi.get_player(mtag)
+                            if not player.club:
+                                return await ctx.send("This user is not in a club!")
                             tag = player.club.tag
                         except brawlstats.errors.RequestError as e:
                             await ctx.send(embed = self.badEmbed(f"BS API is offline, please try again later! ({str(e)})"))
@@ -227,7 +229,7 @@ class BrawlStarsCog(commands.Cog):
                 embed.add_field(name = "Top Members", value = topm, inline = False)
                 return await ctx.send(embed=randomize_colour(embed))            
                 
-            except ZeroDivisionError as e:
+            except Exception as e:
                 return await ctx.send("**Something went wrong while displaying club, please send a personal message to LA Modmail bot or try again!**")
         
         if len((await self.config.guild(ctx.guild).clubs()).keys()) < 1:
