@@ -102,7 +102,7 @@ class BrawlStarsCog(commands.Cog):
             await ctx.send(f"Something went wrong: {str(e)}")
     
     @commands.command(aliases=['bsp'])
-    async def bsprofile(self, ctx, member=None):
+    async def bsprofile(self, ctx, member:discord.Member=None):
         """Brawl Stars profile"""
         await ctx.trigger_typing()
         prefix = ctx.prefix
@@ -226,7 +226,7 @@ class BrawlStarsCog(commands.Cog):
                 embed.add_field(name = "Top Members", value = topm, inline = False)
                 return await ctx.send(embed=randomize_colour(embed))            
                 
-            except Exception as e:
+            except ZeroDivisionError as e:
                 return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
         
         if len((await self.config.guild(ctx.guild).clubs()).keys()) < 1:
@@ -311,7 +311,7 @@ class BrawlStarsCog(commands.Cog):
             else:
                 await ctx.send(embed=embedsToSend[0])
                                 
-        except Exception as e:
+        except ZeroDivisionError as e:
             return await ctx.send("**Something went wrong, please send a personal message to LA Modmail bot or try again!**")
         
     @commands.guild_only()
