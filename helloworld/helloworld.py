@@ -15,7 +15,7 @@ class HWCog(commands.Cog):
     gupta = 468209010978455552
     channel = 617525238392946699
     mloop = 0
-        
+    int(mloop)    
     while mloop > count:
       await channel.send("{} {}".format(gupta.mention, message))
       int(mloop)
