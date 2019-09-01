@@ -8,7 +8,7 @@ class HWCog(commands.Cog):
     """Prints hello world"""
     await ctx.send("Hello World")
 
-  @commands.command(aliases=['ripgupta'])
+  @commands.command()
   async def ripgupta(self, ctx, count, *, message):
     """Put in a sizeable number and put a message afterward"""
     int(count)
